@@ -3,6 +3,19 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Card, CardContent } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import {
     DollarSign,
     Users,
@@ -71,6 +84,9 @@ const stats = [
         icon: RotateCcw,
     },
 ]
+
+
+
 </script>
 
 <template>
@@ -91,7 +107,31 @@ const stats = [
                     </CardContent>
                 </Card>
             </div>
+            <hr />
+            <Switch />
 
+            <hr />
+
+            <AlertDialog>
+                <AlertDialogTrigger as-child>
+                    <Button class="w-32 h-8 text-sm">
+                        Show Dialog
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your
+                            account and remove your data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     </AppLayout>
 </template>
