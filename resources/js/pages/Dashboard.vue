@@ -26,6 +26,8 @@ import {
     Smile,
     RotateCcw
 } from 'lucide-vue-next'
+import { Toaster, toast } from 'vue-sonner'
+import 'vue-sonner/style.css'
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
@@ -111,6 +113,25 @@ const stats = [
             <Switch />
 
             <hr />
+            <Button class="w-32 h-8 text-sm" variant="outline" @click="() => {
+                toast('Event has been created', {
+                    description: 'Sunday, December 03, 2023 at 9:00 AM',
+                    action: {
+                        label: 'Undo',
+                        onClick: () => console.log('Undo'),
+                    },
+                })
+            }">
+                Add to calendar
+            </Button>
+            <hr />
+
+
+
+            <Toaster />
+            <Button class="w-32 h-8 text-sm" @click="() => toast('My first toast')">
+                Give me a toast
+            </Button>
 
             <AlertDialog>
                 <AlertDialogTrigger as-child>
