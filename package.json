@@ -32,7 +32,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "concurrently": "^9.2.0",
-        "css-select": "^5.1.0",
+        "css-select": "^6.0.0",
         "date-fns": "^4.1.0",
         "laravel-vite-plugin": "^1.0",
         "lucide-vue-next": "^0.468.0",
@@ -47,7 +47,7 @@
         "vue": "^3.5.17",
         "vue-sonner": "^2.0.2",
         "ziggy-js": "^2.5.3",
-        "zod": "^4.0.5"
+        "zod": "^3.24.0"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.45.1",
