@@ -111,6 +111,7 @@ import {
 } from '@/components/ui/sheet'
 
 import Calendar from './extra/Calendar.vue';
+import DateRangePicker from './extra/DateRangePicker.vue';
 </script>
 
 <template>
@@ -243,6 +244,7 @@ import Calendar from './extra/Calendar.vue';
             </Select>
 
             <Calendar />
+            <DateRangePicker />
         </div>
     </AppLayout>
 </template>
