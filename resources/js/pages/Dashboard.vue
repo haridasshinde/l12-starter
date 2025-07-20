@@ -110,6 +110,7 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet'
 
+import Calendar from './extra/Calendar.vue';
 </script>
 
 <template>
@@ -240,6 +241,8 @@ import {
                     </SelectGroup>
                 </SelectContent>
             </Select>
+
+            <Calendar />
         </div>
     </AppLayout>
 </template>

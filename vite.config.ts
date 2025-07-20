@@ -21,6 +21,9 @@ export default defineConfig({
             },
         }),
     ],
+    optimizeDeps: {
+        force: true, // 👈 force re-optimize on every dev server start
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
