@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date'
-import { toTypedSchema } from '@vee-validate/zod'
 import { CalendarIcon } from 'lucide-vue-next'
 import { toDate } from 'reka-ui/date'
-import { useForm } from 'vee-validate'
 import { computed, ref } from 'vue'
-import { z } from 'zod'
 import { cn } from '@/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -24,37 +21,39 @@ const df = new DateFormatter('en-US', {
     dateStyle: 'long',
 })
 
-const formSchema = toTypedSchema(z.object({
-    dob: z
-        .string()
-        .refine(v => v, { message: 'A date of birth is required.' }),
-}))
-
+// form state
+const dob = ref<string | undefined>(undefined)
+const error = ref<string | null>(null)
 const placeholder = ref()
 
-const { handleSubmit, setFieldValue, values } = useForm({
-    validationSchema: formSchema,
-})
-
+// used to control calendar display
 const value = computed({
-    get: () => values.dob ? parseDate(values.dob) : undefined,
-    set: val => val,
+    get: () => dob.value ? parseDate(dob.value) : undefined,
+    set: val => {
+        dob.value = val?.toString()
+    },
 })
 
-const onSubmit = handleSubmit((date) => {
+const onSubmit = () => {
+    if (!dob.value) {
+        error.value = 'A date of birth is required.'
+        return
+    }
+
+    error.value = null
+
     toast('The form has been submitted', {
-        description: date.dob.toString(),
+        description: dob.value,
         action: {
             label: 'Undo',
-            onClick: () => console.log(JSON.stringify(date)),
+            onClick: () => console.log(JSON.stringify({ dob: dob.value })),
         },
     })
-
-})
+}
 </script>
 
 <template>
-    <form class="space-y-8" @submit="onSubmit">
+    <form class="space-y-8" @submit.prevent="onSubmit">
         <FormField name="dob">
             <FormItem class="flex flex-col">
                 <FormLabel>Date of birth</FormLabel>
@@ -68,30 +67,27 @@ const onSubmit = handleSubmit((date) => {
                                 <span>{{ value ? df.format(toDate(value)) : "Pick a date" }}</span>
                                 <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                             </Button>
-                            <input hidden>
+                            <input type="hidden" :value="dob" />
                         </FormControl>
                     </PopoverTrigger>
                     <PopoverContent class="w-auto p-0">
                         <Calendar v-model:placeholder="placeholder" :model-value="value" calendar-label="Date of birth"
                             initial-focus :min-value="new CalendarDate(1900, 1, 1)"
                             :max-value="today(getLocalTimeZone())" @update:model-value="(v) => {
-                                if (v) {
-                                    setFieldValue('dob', v.toString())
-                                }
-                                else {
-                                    setFieldValue('dob', undefined)
-                                }
+                                dob = v ? v.toString() : undefined
                             }" />
                     </PopoverContent>
                 </Popover>
                 <FormDescription>
                     Your date of birth is used to calculate your age.
                 </FormDescription>
-                <FormMessage />
+                <FormMessage v-if="error" class="text-red-500 text-sm mt-1">
+                    {{ error }}
+                </FormMessage>
             </FormItem>
         </FormField>
         <Button type="submit">
             Submit
         </Button>
-    </Form>
+    </form>
 </template>
