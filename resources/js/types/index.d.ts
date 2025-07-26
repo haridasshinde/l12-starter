@@ -8,6 +8,7 @@ export interface Auth {
 export interface BreadcrumbItem {
     title: string;
     href: string;
+    subItems?: BreadcrumbItem[];
 }
 
 export interface NavItem {
@@ -15,6 +16,7 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon;
     isActive?: boolean;
+    children?: NavItem[];
 }
 
 export type AppPageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
