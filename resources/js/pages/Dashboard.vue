@@ -110,7 +110,6 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet'
 
-import Calendar from './extra/Calendar.vue';
 import DateRangePicker from './extra/DateRangePicker.vue';
 </script>
 
@@ -243,7 +242,6 @@ import DateRangePicker from './extra/DateRangePicker.vue';
                 </SelectContent>
             </Select>
 
-            <Calendar />
             <DateRangePicker />
         </div>
     </AppLayout>
