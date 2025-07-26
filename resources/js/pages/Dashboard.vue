@@ -119,7 +119,7 @@ import DateRangePicker from './extra/DateRangePicker.vue';
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
+        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
             <div class="grid auto-rows-min gap-4 md:grid-cols-4">
                 <Card v-for="stat in stats" :key="stat.title" class="rounded-xl shadow-sm">
                     <CardContent class="px-3 flex justify-between items-star">
