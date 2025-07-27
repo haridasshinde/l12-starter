@@ -14,13 +14,14 @@ defineProps<{
 <template>
     <div
         class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
-        <!-- Left Panel - Enhanced with gradients and better visual hierarchy -->
+        <!-- Left Panel - Light color scheme with soft gradients -->
         <div
-            class="relative hidden h-full flex-col bg-gradient-to-br from-rose-900 via-rose-800 to-rose-900 p-10 text-white lg:flex dark:border-r overflow-hidden">
+            class="relative hidden h-full flex-col bg-gradient-to-br from-blue-100 via-indigo-50 to-purple-100 p-10 text-gray-800 lg:flex dark:border-r overflow-hidden">
             <!-- Background decorative elements -->
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl animate-pulse-slow"></div>
-                <div class="absolute bottom-20 right-20 w-96 h-96 bg-rose-300 rounded-full blur-3xl animate-float">
+            <div class="absolute inset-0 opacity-20">
+                <div class="absolute top-20 left-20 w-72 h-72 bg-blue-200 rounded-full blur-3xl animate-pulse-slow">
+                </div>
+                <div class="absolute bottom-20 right-20 w-96 h-96 bg-purple-200 rounded-full blur-3xl animate-float">
                 </div>
             </div>
 
@@ -28,48 +29,49 @@ defineProps<{
             <Link :href="route('home')"
                 class="relative z-20 flex items-center text-lg font-medium mb-8 group transition-all duration-300 hover:scale-105">
             <AppLogoIcon
-                class="mr-3 size-10 fill-current text-white transition-transform duration-300 group-hover:rotate-12" />
-            <span class="text-xl font-bold">{{ name }}</span>
+                class="mr-3 size-10 fill-current text-blue-600 transition-transform duration-300 group-hover:rotate-12" />
+            <span class="text-xl font-bold text-gray-800">{{ name }}</span>
             </Link>
+
 
             <!-- Main content with better typography and spacing -->
             <div class="relative z-10 flex-1 flex flex-col justify-center space-y-12 text-center lg:text-left">
                 <div class="animate-slide-fade">
                     <div
-                        class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-sm font-medium mb-3 animate-bounce-subtle">
-                        <svg class="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        class="inline-flex items-center px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm text-sm font-medium mb-3 animate-bounce-subtle border border-blue-200">
+                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        Trusted by 12,000+ restaurants worldwide
+                        <span class="text-gray-700">Trusted by 12,000+ restaurants worldwide</span>
                     </div>
 
-                    <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+                    <h1 class="text-5xl md:text-6xl font-bold text-gray-800 leading-tight mb-6">
                         Restaurant Control Panel
                         <br />
                         <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-rose-200 to-orange-200 animate-gradient">
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 animate-gradient">
                             Simplified Operations
                         </span>
                     </h1>
 
-                    <p class="text-xl text-rose-100 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                         Streamline your restaurant operations with our comprehensive platform. From inventory management
                         to analytics,
                         everything you need in one powerful dashboard.
                     </p>
                 </div>
 
-                <!-- Enhanced metrics grid with better visual design -->
+                <!-- Enhanced metrics grid with light colors -->
                 <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
                     <!-- Restaurants -->
                     <div class="group cursor-pointer">
                         <div
-                            class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl border border-white/20">
+                            class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/90 hover:scale-105 hover:shadow-xl border border-blue-200">
                             <div class="flex justify-center mb-4">
                                 <div
-                                    class="p-3 bg-gradient-to-br from-rose-400 to-rose-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    class="p-3 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -77,18 +79,18 @@ defineProps<{
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-white mb-2 animate-count-up">12,000+</div>
-                            <div class="text-sm text-rose-200">Active Restaurants</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2 animate-count-up">12,000+</div>
+                            <div class="text-sm text-gray-600">Active Restaurants</div>
                         </div>
                     </div>
 
                     <!-- Countries -->
                     <div class="group cursor-pointer">
                         <div
-                            class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl border border-white/20">
+                            class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/90 hover:scale-105 hover:shadow-xl border border-purple-200">
                             <div class="flex justify-center mb-4">
                                 <div
-                                    class="p-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    class="p-3 bg-gradient-to-br from-purple-400 to-purple-500 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -96,18 +98,18 @@ defineProps<{
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-white mb-2">50+</div>
-                            <div class="text-sm text-rose-200">Countries Served</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2">50+</div>
+                            <div class="text-sm text-gray-600">Countries Served</div>
                         </div>
                     </div>
 
                     <!-- Orders -->
                     <div class="group cursor-pointer">
                         <div
-                            class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl border border-white/20">
+                            class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/90 hover:scale-105 hover:shadow-xl border border-emerald-200">
                             <div class="flex justify-center mb-4">
                                 <div
-                                    class="p-3 bg-gradient-to-br from-green-400 to-green-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    class="p-3 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -115,18 +117,18 @@ defineProps<{
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-white mb-2">1M+</div>
-                            <div class="text-sm text-rose-200">Daily Orders</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2">1M+</div>
+                            <div class="text-sm text-gray-600">Daily Orders</div>
                         </div>
                     </div>
 
                     <!-- Support -->
                     <div class="group cursor-pointer">
                         <div
-                            class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl border border-white/20">
+                            class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/90 hover:scale-105 hover:shadow-xl border border-indigo-200">
                             <div class="flex justify-center mb-4">
                                 <div
-                                    class="p-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    class="p-3 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -134,18 +136,18 @@ defineProps<{
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-white mb-2">24/7</div>
-                            <div class="text-sm text-rose-200">Support Available</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2">24/7</div>
+                            <div class="text-sm text-gray-600">Support Available</div>
                         </div>
                     </div>
 
                     <!-- Uptime -->
                     <div class="group cursor-pointer">
                         <div
-                            class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl border border-white/20">
+                            class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/90 hover:scale-105 hover:shadow-xl border border-amber-200">
                             <div class="flex justify-center mb-4">
                                 <div
-                                    class="p-3 bg-gradient-to-br from-yellow-400 to-orange-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    class="p-3 bg-gradient-to-br from-amber-400 to-orange-400 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -153,18 +155,18 @@ defineProps<{
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-white mb-2">99.99%</div>
-                            <div class="text-sm text-rose-200">System Uptime</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2">99.99%</div>
+                            <div class="text-sm text-gray-600">System Uptime</div>
                         </div>
                     </div>
 
                     <!-- Security -->
                     <div class="group cursor-pointer">
                         <div
-                            class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/20 hover:scale-105 hover:shadow-2xl border border-white/20">
+                            class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 transition-all duration-300 hover:bg-white/90 hover:scale-105 hover:shadow-xl border border-teal-200">
                             <div class="flex justify-center mb-4">
                                 <div
-                                    class="p-3 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    class="p-3 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
                                         viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -172,8 +174,8 @@ defineProps<{
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-3xl font-bold text-white mb-2">100%</div>
-                            <div class="text-sm text-rose-200">Secure & Compliant</div>
+                            <div class="text-3xl font-bold text-gray-800 mb-2">100%</div>
+                            <div class="text-sm text-gray-600">Secure & Compliant</div>
                         </div>
                     </div>
                 </div>
@@ -182,44 +184,44 @@ defineProps<{
                 <div class="mt-12 animate-slide-up">
                     <div class="flex flex-wrap justify-center lg:justify-start gap-4">
                         <div
-                            class="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20">
-                            <svg class="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            class="flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-sm font-medium border border-blue-200">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                     clip-rule="evenodd" />
                             </svg>
-                            Real-time Analytics
+                            <span class="text-gray-700">Real-time Analytics</span>
                         </div>
                         <div
-                            class="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20">
-                            <svg class="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            class="flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-sm font-medium border border-purple-200">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                     clip-rule="evenodd" />
                             </svg>
-                            Inventory Management
+                            <span class="text-gray-700">Inventory Management</span>
                         </div>
                         <div
-                            class="flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20">
-                            <svg class="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            class="flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-sm font-medium border border-emerald-200">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                     clip-rule="evenodd" />
                             </svg>
-                            Multi-location Support
+                            <span class="text-gray-700">Multi-location Support</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right Panel - Enhanced form container -->
-        <div class="lg:p-8 flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Right Panel - Clean light background -->
+        <div class="lg:p-8 flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
             <div class="mx-auto flex w-full flex-col justify-center space-y-8 sm:w-[400px] animate-slide-in-right">
                 <!-- Enhanced header section -->
                 <div class="flex flex-col space-y-4 text-center">
                     <div
-                        class="mx-auto w-16 h-16 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg animate-bounce-subtle">
+                        class="mx-auto w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg animate-bounce-subtle">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -237,7 +239,7 @@ defineProps<{
 
                 <!-- Form container with enhanced styling -->
                 <div
-                    class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                    class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <slot />
                 </div>
 
@@ -331,11 +333,11 @@ defineProps<{
 
     0%,
     100% {
-        box-shadow: 0 0 20px rgba(244, 63, 94, 0.3);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
 
     50% {
-        box-shadow: 0 0 40px rgba(244, 63, 94, 0.6);
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
     }
 }
 
@@ -357,11 +359,11 @@ defineProps<{
 
     0%,
     100% {
-        opacity: 0.1;
+        opacity: 0.2;
     }
 
     50% {
-        opacity: 0.2;
+        opacity: 0.3;
     }
 }
 
