@@ -255,9 +255,9 @@ defineProps<{
                     </div>
 
                     <div class="flex items-center justify-center space-x-6 text-xs text-gray-400">
-                        <span>SOC 2 Compliant</span>
+                        <!-- <span>SOC 2 Compliant</span>
                         <span>•</span>
-                        <span>GDPR Ready</span>
+                        <span>GDPR Ready</span> -->
                         <span>•</span>
                         <span>256-bit Encryption</span>
                     </div>
