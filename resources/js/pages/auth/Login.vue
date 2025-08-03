@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -8,10 +9,9 @@ import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
-import ChangeLanguage from '../settings/ChangeLanguage.vue';
-import HeadingSmall from '@/components/HeadingSmall.vue';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import ChangeLanguage from '../settings/ChangeLanguage.vue';
 
 defineProps<{
     status?: string;
@@ -29,17 +29,14 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
-const { t } = useI18n()
-const pageTitle = computed(() => t('Choose your language'))
-const title = computed(() => t('Log in'))
-const description = computed(() => t('Enter your email and password below to log in'))
-
-
+const { t } = useI18n();
+const pageTitle = computed(() => t('Choose your language'));
+const title = computed(() => t('Log in'));
+const description = computed(() => t('Enter your email and password below to log in'));
 </script>
 
 <template>
     <AuthBase :title="title" :description="description">
-
         <Head :title="title" />
 
         <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
@@ -50,21 +47,35 @@ const description = computed(() => t('Enter your email and password below to log
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">{{ t('Email address') }}</Label>
-                    <Input id="email" type="email" required autofocus :tabindex="1" autocomplete="email"
-                        v-model="form.email" placeholder="email@example.com" />
+                    <Input
+                        id="email"
+                        type="email"
+                        required
+                        autofocus
+                        :tabindex="1"
+                        autocomplete="email"
+                        v-model="form.email"
+                        placeholder="email@example.com"
+                    />
                     <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
                         <Label for="password">{{ t('Password') }}</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm"
-                            :tabindex="5">
+                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" :tabindex="5">
                             {{ t('Forgot password?') }}
                         </TextLink>
                     </div>
-                    <Input id="password" type="password" required :tabindex="2" autocomplete="current-password"
-                        v-model="form.password" placeholder="Password" />
+                    <Input
+                        id="password"
+                        type="password"
+                        required
+                        :tabindex="2"
+                        autocomplete="current-password"
+                        v-model="form.password"
+                        placeholder="Password"
+                    />
                     <InputError :message="form.errors.password" />
                 </div>
 
@@ -83,13 +94,12 @@ const description = computed(() => t('Enter your email and password below to log
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground mb-5">
+            <div class="mb-5 text-center text-sm text-muted-foreground">
                 {{ t("Don't have an account?") }}
                 <TextLink :href="route('register')" :tabindex="5">
                     {{ t('Sign up') }}
                 </TextLink>
             </div>
-
         </form>
         <hr />
         <HeadingSmall :title="pageTitle" class="mt-4" />
