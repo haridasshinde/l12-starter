@@ -83,7 +83,7 @@ const description = computed(() => t('Enter your email and password below to log
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="text-center text-sm text-muted-foreground mb-5">
                 {{ t("Don't have an account?") }}
                 <TextLink :href="route('register')" :tabindex="5">
                     {{ t('Sign up') }}
@@ -92,7 +92,7 @@ const description = computed(() => t('Enter your email and password below to log
 
         </form>
         <hr />
-        <HeadingSmall :title="pageTitle" />
-        <ChangeLanguage />
+        <HeadingSmall :title="pageTitle" class="mt-4" />
+        <ChangeLanguage class="mt-4 text-center" />
     </AuthBase>
 </template>
