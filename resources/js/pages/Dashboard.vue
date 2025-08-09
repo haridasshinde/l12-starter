@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const groupedStats = [
     {
-        label: 'User Metrics',
+        label: 'Desktop POS (Offline)',
         stats: [
             {
                 title: 'Registration',
@@ -30,13 +30,13 @@ const groupedStats = [
                 icon: Users,
             },
             {
-                title: 'Registration',
+                title: 'Feedbacks',
                 value: '$45,231.89',
                 subtitle: '+20.1% from last month',
                 icon: DollarSign,
             },
             {
-                title: 'Activation',
+                title: 'History',
                 value: '1,289',
                 subtitle: '+4.5% from last week',
                 icon: Users,
@@ -44,28 +44,85 @@ const groupedStats = [
         ],
     },
     {
-        label: 'Business Metrics',
+        label: 'Captain App (Offline)',
         stats: [
             {
-                title: 'Feedback',
+                title: 'Registration',
                 value: '3,124',
                 subtitle: '+8.7% this month',
                 icon: ShoppingCart,
             },
             {
-                title: 'History',
+                title: 'Activation',
                 value: '12.4%',
                 subtitle: 'Compared to last quarter',
                 icon: TrendingUp,
             },
             {
-                title: 'Feedback',
+                title: 'Trial',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+        ],
+    },
+    {
+        label: 'Kitchen APP (Offline)',
+        stats: [
+            {
+                title: 'Registration',
                 value: '3,124',
                 subtitle: '+8.7% this month',
                 icon: ShoppingCart,
             },
             {
-                title: 'History',
+                title: 'Activation',
+                value: '12.4%',
+                subtitle: 'Compared to last quarter',
+                icon: TrendingUp,
+            },
+            {
+                title: 'Trial',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+        ],
+    },
+    {
+        label: 'Atlantic POS (Desktop & Mobile)',
+        stats: [
+            {
+                title: 'Activated Master Users',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+            {
+                title: 'Activated Outlets',
+                value: '12.4%',
+                subtitle: 'Compared to last quarter',
+                icon: TrendingUp,
+            },
+            {
+                title: 'Demo Requests',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+        ],
+    },
+    {
+        label: 'Enquiry',
+        stats: [
+            {
+                title: 'Campain Enquiry',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+            {
+                title: 'Quick Enquiry',
                 value: '12.4%',
                 subtitle: 'Compared to last quarter',
                 icon: TrendingUp,
