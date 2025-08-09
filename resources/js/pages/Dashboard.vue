@@ -4,7 +4,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
-import { ArrowDownCircle, BarChart2, DollarSign, RotateCcw, ShoppingCart, Smile, TrendingUp, Users } from 'lucide-vue-next';
+import { DollarSign, ShoppingCart, TrendingUp, Users } from 'lucide-vue-next';
 import 'vue-sonner/style.css';
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -13,57 +13,66 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const stats = [
+const groupedStats = [
     {
-        title: 'Total Revenue',
-        value: '$45,231.89',
-        subtitle: '+20.1% from last month',
-        icon: DollarSign,
+        label: 'User Metrics',
+        stats: [
+            {
+                title: 'Registration',
+                value: '$45,231.89',
+                subtitle: '+20.1% from last month',
+                icon: DollarSign,
+            },
+            {
+                title: 'Activation',
+                value: '1,289',
+                subtitle: '+4.5% from last week',
+                icon: Users,
+            },
+            {
+                title: 'Registration',
+                value: '$45,231.89',
+                subtitle: '+20.1% from last month',
+                icon: DollarSign,
+            },
+            {
+                title: 'Activation',
+                value: '1,289',
+                subtitle: '+4.5% from last week',
+                icon: Users,
+            },
+        ],
     },
     {
-        title: 'New Users',
-        value: '1,289',
-        subtitle: '+4.5% from last week',
-        icon: Users,
+        label: 'Business Metrics',
+        stats: [
+            {
+                title: 'Feedback',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+            {
+                title: 'History',
+                value: '12.4%',
+                subtitle: 'Compared to last quarter',
+                icon: TrendingUp,
+            },
+            {
+                title: 'Feedback',
+                value: '3,124',
+                subtitle: '+8.7% this month',
+                icon: ShoppingCart,
+            },
+            {
+                title: 'History',
+                value: '12.4%',
+                subtitle: 'Compared to last quarter',
+                icon: TrendingUp,
+            },
+        ],
     },
-    {
-        title: 'Orders',
-        value: '3,124',
-        subtitle: '+8.7% this month',
-        icon: ShoppingCart,
-    },
-    {
-        title: 'Revenue Growth',
-        value: '12.4%',
-        subtitle: 'Compared to last quarter',
-        icon: TrendingUp,
-    },
-    {
-        title: 'Active Sessions',
-        value: '8,234',
-        subtitle: 'Live users now',
-        icon: BarChart2,
-    },
-    {
-        title: 'Bounce Rate',
-        value: '38.7%',
-        subtitle: 'Down from 42.3%',
-        icon: ArrowDownCircle,
-    },
-    {
-        title: 'Satisfaction',
-        value: '96%',
-        subtitle: 'Customer feedback score',
-        icon: Smile,
-    },
-    {
-        title: 'Refunds',
-        value: '53',
-        subtitle: 'This month',
-        icon: RotateCcw,
-    },
-];
-
+]
 </script>
 
 <template>
@@ -72,17 +81,27 @@ const stats = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-4">
-                <Card v-for="stat in stats" :key="stat.title" class="rounded-xl shadow-sm">
-                    <CardContent class="items-star flex justify-between px-3">
-                        <div>
-                            <p class="text-sm text-muted-foreground">{{ stat.title }}</p>
-                            <h2 class="mt-1 text-3xl font-bold text-black">{{ stat.value }}</h2>
-                            <p class="mt-1 text-xs text-muted-foreground">{{ stat.subtitle }}</p>
-                        </div>
-                        <component :is="stat.icon" class="mt-1 h-5 w-5 text-muted-foreground" />
-                    </CardContent>
-                </Card>
+            <div v-for="group in groupedStats" :key="group.label" class="space-y-2">
+                <!-- Group Label -->
+                <h2 class="text-lg font-semibold text-gray-700">{{ group.label }}</h2>
+
+                <!-- Stats Cards -->
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <Card v-for="stat in group.stats" :key="stat.title" class="rounded-xl shadow-sm">
+                        <CardContent class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">{{ stat.title }}</p>
+                                <h2 class="mt-1 text-3xl font-bold text-black">
+                                    {{ stat.value }}
+                                </h2>
+                                <p class="mt-1 text-xs text-muted-foreground">
+                                    {{ stat.subtitle }}
+                                </p>
+                            </div>
+                            <component :is="stat.icon" class="mt-1 h-5 w-5 text-muted-foreground" />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     </AppLayout>
