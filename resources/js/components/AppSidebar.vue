@@ -29,7 +29,7 @@ const mainNavItems: NavItem[] = [
             },
             {
                 title: 'Users',
-                href: '#',
+                href: '/users',
             },
         ],
     },
