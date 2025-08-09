@@ -1,25 +1,10 @@
 <script setup lang="ts">
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 import { ArrowDownCircle, BarChart2, DollarSign, RotateCcw, ShoppingCart, Smile, TrendingUp, Users } from 'lucide-vue-next';
-import { Toaster, toast } from 'vue-sonner';
 import 'vue-sonner/style.css';
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -79,14 +64,10 @@ const stats = [
     },
 ];
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-
-import DateRangePicker from './extra/DateRangePicker.vue';
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
@@ -103,97 +84,6 @@ import DateRangePicker from './extra/DateRangePicker.vue';
                     </CardContent>
                 </Card>
             </div>
-            <hr />
-            <Switch />
-
-            <hr />
-            <Button
-                class="h-8 w-32 text-sm"
-                variant="outline"
-                @click="
-                    () => {
-                        toast('Event has been created', {
-                            description: 'Sunday, December 03, 2023 at 9:00 AM',
-                            action: {
-                                label: 'Undo',
-                                onClick: () => console.log('Undo'),
-                            },
-                        });
-                    }
-                "
-            >
-                Add to calendar
-            </Button>
-            <hr />
-
-            <Toaster />
-            <Button class="h-8 w-32 text-sm" @click="() => toast('My first toast')"> Give me a toast </Button>
-
-            <AlertDialog>
-                <AlertDialogTrigger as-child>
-                    <Button class="h-8 w-32 text-sm"> Show Dialog </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete your account and remove your data from our servers.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-
-            <div class="grid grid-cols-2 gap-2">
-                <Sheet>
-                    <SheetTrigger as-child>
-                        <Button variant="outline" class="h-8 w-32 text-sm"> Open Left Sidebar </Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Edit profile</SheetTitle>
-                            <SheetDescription> Make changes to your profile here. Click save when you're done. </SheetDescription>
-                        </SheetHeader>
-
-                        <div class="grid gap-4 p-2 py-4">
-                            <div class="grid grid-cols-4 items-center gap-4">
-                                <Label for="name" class="text-right"> Name </Label>
-                                <Input id="name" value="Pedro Duarte" class="col-span-3" />
-                            </div>
-                            <div class="grid grid-cols-4 items-center gap-4">
-                                <Label for="username" class="text-right"> Username </Label>
-                                <Input id="username" value="@peduarte" class="col-span-3" />
-                            </div>
-                        </div>
-                        <SheetFooter>
-                            <SheetClose as-child>
-                                <Button type="submit"> Save changes </Button>
-                            </SheetClose>
-                        </SheetFooter>
-                    </SheetContent>
-                </Sheet>
-            </div>
-
-            <Select>
-                <SelectTrigger class="w-[180px]">
-                    <SelectValue placeholder="Select a fruit" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Fruits</SelectLabel>
-                        <SelectItem value="apple"> Apple </SelectItem>
-                        <SelectItem value="banana"> Banana </SelectItem>
-                        <SelectItem value="blueberry"> Blueberry </SelectItem>
-                        <SelectItem value="grapes"> Grapes </SelectItem>
-                        <SelectItem value="pineapple"> Pineapple </SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
-
-            <DateRangePicker />
         </div>
     </AppLayout>
 </template>
