@@ -143,14 +143,15 @@ const groupedStats = [
                 <h2 class="text-lg font-semibold text-gray-700">{{ group.label }}</h2>
 
                 <!-- Stats Cards -->
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <Card v-for="stat in group.stats" :key="stat.title" class="rounded-xl shadow-sm">
-                        <CardContent class="flex items-start justify-between">
+                <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <Card v-for="stat in group.stats" :key="stat.title"
+                        class="rounded-xl shadow-sm transition-all duration-300 ease-in-out hover:shadow-lg hover:scale-105">
+                        <CardContent class="flex items-start justify-between py-0">
                             <div>
                                 <p class="text-sm text-muted-foreground">{{ stat.title }}</p>
-                                <h2 class="mt-1 text-3xl font-bold text-black">
+                                <h4 class="mt-1 font-bold text-black">
                                     {{ stat.value }}
-                                </h2>
+                                </h4>
                                 <p class="mt-1 text-xs text-muted-foreground">
                                     {{ stat.subtitle }}
                                 </p>
@@ -161,5 +162,8 @@ const groupedStats = [
                 </div>
             </div>
         </div>
+
+
+
     </AppLayout>
 </template>
