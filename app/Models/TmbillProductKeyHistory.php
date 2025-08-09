@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TmbillProductKeyHistory extends Model
 {
+    use HasFactory;
+
     protected $table = 'tmbill_product_key_history';
 
     protected $primaryKey = 'id';

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TmbillFeedback extends Model
 {
+    use HasFactory;
+
     protected $table = 'tmbill_feedback';
 
     protected $primaryKey = 'id';

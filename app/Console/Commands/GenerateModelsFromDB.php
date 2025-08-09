@@ -68,9 +68,10 @@ class GenerateModelsFromDB extends Command
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 class {$className} extends Model
 {
+    use HasFactory;
     protected \$table = '{$tableName}';
     protected \$primaryKey = '{$primaryKey}';
     public \$timestamps = {$timestamps};

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DeskBillPayment extends Model
 {
+    use HasFactory;
+
     protected $table = 'desk_bill_payment';
 
     protected $primaryKey = 'tracking_id';

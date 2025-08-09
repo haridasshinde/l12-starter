@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TmbillActivationStatus extends Model
 {
+    use HasFactory;
+
     protected $table = 'tmbill_activation_status';
 
     protected $primaryKey = 'product';

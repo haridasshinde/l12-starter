@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TmbillPayment extends Model
 {
+    use HasFactory;
+
     protected $table = 'tmbill_payments';
 
     protected $primaryKey = 'order_id';

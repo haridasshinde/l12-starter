@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TmbillRegistration extends Model
 {
+    use HasFactory;
+
     protected $table = 'tmbill_registration';
 
     protected $primaryKey = 'mobile';
