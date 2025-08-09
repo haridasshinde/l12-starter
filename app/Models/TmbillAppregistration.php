@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class TmbillAppregistration extends Model
 {
     protected $table = 'tmbill_appregistration';
+
     protected $primaryKey = 'id';
+
     public $timestamps = false;
+
     protected $fillable = ['Name', 'Mobile', 'Email', 'Business name', 'Address', 'CurrrentActiveDevice', 'ActiveDeviceLimit', 'OTP'];
 }

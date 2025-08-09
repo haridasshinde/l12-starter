@@ -9,17 +9,18 @@ use Illuminate\Support\Str;
 class GenerateModelsFromDB extends Command
 {
     protected $signature = 'generate:models';
+
     protected $description = 'Generate Eloquent models from existing database tables';
 
     public function handle()
     {
         $modelsPath = app_path('Models');
-        if (!is_dir($modelsPath)) {
+        if (! is_dir($modelsPath)) {
             mkdir($modelsPath, 0755, true);
         }
 
         $tables = DB::select('SHOW TABLES');
-        $dbNameKey = 'Tables_in_' . DB::getDatabaseName();
+        $dbNameKey = 'Tables_in_'.DB::getDatabaseName();
 
         // Tables we don't want to create models for
         $skipTables = [
@@ -41,6 +42,7 @@ class GenerateModelsFromDB extends Command
 
             if (in_array($tableName, $skipTables)) {
                 $this->info("⏩ Skipping table: {$tableName}");
+
                 continue;
             }
 
@@ -58,7 +60,7 @@ class GenerateModelsFromDB extends Command
 
         $timestamps = $this->hasTimestamps($tableName) ? 'true' : 'false';
 
-        $fillableString = "['" . implode("', '", $fillable) . "']";
+        $fillableString = "['".implode("', '", $fillable)."']";
 
         $content = <<<PHP
 <?php
@@ -84,6 +86,7 @@ PHP;
     protected function getPrimaryKey($table)
     {
         $indexes = DB::select("SHOW KEYS FROM {$table} WHERE Key_name = 'PRIMARY'");
+
         return $indexes[0]->Column_name ?? 'id';
     }
 
@@ -104,7 +107,7 @@ PHP;
     protected function hasTimestamps($table)
     {
         $columns = DB::select("SHOW COLUMNS FROM {$table}");
-        $colNames = array_map(fn($col) => $col->Field, $columns);
+        $colNames = array_map(fn ($col) => $col->Field, $columns);
 
         return in_array('created_at', $colNames) && in_array('updated_at', $colNames);
     }

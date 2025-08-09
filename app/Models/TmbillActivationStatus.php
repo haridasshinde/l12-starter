@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class TmbillActivationStatus extends Model
 {
     protected $table = 'tmbill_activation_status';
+
     protected $primaryKey = 'product';
+
     public $timestamps = false;
+
     protected $fillable = ['id', 'name', 'mobile', 'email', 'start_date', 'end_date', 'duration', 'activation_status', 'mac_address', 'type_software', 'col1', 'col2', 'col3'];
 }

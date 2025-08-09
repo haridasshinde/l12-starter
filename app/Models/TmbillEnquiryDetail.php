@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class TmbillEnquiryDetail extends Model
 {
     protected $table = 'tmbill_enquiry_details';
+
     protected $primaryKey = 'id';
+
     public $timestamps = false;
+
     protected $fillable = ['name', 'email', 'mobile', 'required_date', 'comment', 'trial_date', 'amount', 'ref_from', 'product_name', 'address', 'date', 'created_at'];
 }
