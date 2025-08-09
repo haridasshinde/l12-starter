@@ -138,7 +138,7 @@ const groupedStats = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <div v-for="group in groupedStats" :key="group.label" class="space-y-2">
+            <div v-for="group in groupedStats" :key="group.label" class="space-y-0">
                 <!-- Group Label -->
                 <h2 class="text-lg font-semibold text-gray-700">{{ group.label }}</h2>
 
