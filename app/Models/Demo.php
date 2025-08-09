@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Demo extends Model
 {
     protected $table = 'demo';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'dataValue',
-    ];
+    protected $fillable = ['dataValue'];
 }

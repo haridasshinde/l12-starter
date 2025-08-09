@@ -9,89 +9,103 @@ use Illuminate\Support\Str;
 class GenerateModelsFromDB extends Command
 {
     protected $signature = 'generate:models';
-
-    protected $description = 'Generate Eloquent models from existing DB tables with fillable fields and primary key detection, skipping Laravel defaults';
+    protected $description = 'Generate Eloquent models from existing database tables';
 
     public function handle()
     {
-        // Laravel default tables to skip
+        $modelsPath = app_path('Models');
+        if (!is_dir($modelsPath)) {
+            mkdir($modelsPath, 0755, true);
+        }
+
+        $tables = DB::select('SHOW TABLES');
+        $dbNameKey = 'Tables_in_' . DB::getDatabaseName();
+
+        // Tables we don't want to create models for
         $skipTables = [
             'migrations',
-            'users',
+            'password_resets',
             'password_reset_tokens',
             'sessions',
             'cache',
             'cache_locks',
             'jobs',
+            'failed_jobs',
+            'personal_access_tokens',
             'job_batches',
             'failed_jobs',
         ];
 
-        $tables = DB::select('SHOW TABLES');
-        $dbName = DB::getDatabaseName();
-        $key = 'Tables_in_'.$dbName;
-
-        $modelsPath = app_path('Models');
-        if (! is_dir($modelsPath)) {
-            mkdir($modelsPath, 0755, true);
-        }
-
         foreach ($tables as $table) {
-            $tableName = $table->$key;
+            $tableName = $table->$dbNameKey;
 
-            // Skip Laravel's default/system tables
             if (in_array($tableName, $skipTables)) {
-                $this->warn("Skipping Laravel default table: $tableName");
-
+                $this->info("⏩ Skipping table: {$tableName}");
                 continue;
             }
 
-            // Get columns
-            $columns = DB::select("SHOW COLUMNS FROM `$tableName`");
-
-            // Detect primary key
-            $primaryKey = 'id';
-            $fillable = [];
-
-            foreach ($columns as $col) {
-                if ($col->Key === 'PRI') {
-                    $primaryKey = $col->Field;
-                } else {
-                    $fillable[] = $col->Field;
-                }
-            }
-
-            // Build model name
-            $modelName = Str::studly(Str::singular($tableName));
-            $filePath = $modelsPath.'/'.$modelName.'.php';
-
-            if (file_exists($filePath)) {
-                $this->warn("Model $modelName already exists, skipping...");
-
-                continue;
-            }
-
-            // Create model content
-            $content = "<?php\n\n";
-            $content .= "namespace App\Models;\n\n";
-            $content .= "use Illuminate\\Database\\Eloquent\\Model;\n\n";
-            $content .= "class $modelName extends Model\n";
-            $content .= "{\n";
-            $content .= "    protected \$table = '$tableName';\n";
-            if ($primaryKey !== 'id') {
-                $content .= "    protected \$primaryKey = '$primaryKey';\n";
-            }
-            $content .= "    public \$timestamps = false;\n";
-            $content .= '    protected $fillable = '.var_export($fillable, true).";\n";
-            $content .= "}\n";
-
-            file_put_contents($filePath, $content);
-
-            $this->info("Created model: $modelName");
+            $this->generateModel($tableName);
         }
 
-        $this->info('✅ Model generation completed (Laravel defaults skipped)!');
+        $this->info('✅ Model generation complete!');
+    }
 
-        return Command::SUCCESS;
+    protected function generateModel($tableName)
+    {
+        $className = Str::studly(Str::singular($tableName));
+        $primaryKey = $this->getPrimaryKey($tableName);
+        $fillable = $this->getFillableColumns($tableName);
+
+        $timestamps = $this->hasTimestamps($tableName) ? 'true' : 'false';
+
+        $fillableString = "['" . implode("', '", $fillable) . "']";
+
+        $content = <<<PHP
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class {$className} extends Model
+{
+    protected \$table = '{$tableName}';
+    protected \$primaryKey = '{$primaryKey}';
+    public \$timestamps = {$timestamps};
+    protected \$fillable = {$fillableString};
+}
+
+PHP;
+
+        file_put_contents(app_path("Models/{$className}.php"), $content);
+        $this->info("📄 Model created: {$className}");
+    }
+
+    protected function getPrimaryKey($table)
+    {
+        $indexes = DB::select("SHOW KEYS FROM {$table} WHERE Key_name = 'PRIMARY'");
+        return $indexes[0]->Column_name ?? 'id';
+    }
+
+    protected function getFillableColumns($table)
+    {
+        $columns = DB::select("SHOW COLUMNS FROM {$table}");
+        $fillable = [];
+
+        foreach ($columns as $column) {
+            if ($column->Key !== 'PRI') {
+                $fillable[] = $column->Field;
+            }
+        }
+
+        return $fillable;
+    }
+
+    protected function hasTimestamps($table)
+    {
+        $columns = DB::select("SHOW COLUMNS FROM {$table}");
+        $colNames = array_map(fn($col) => $col->Field, $columns);
+
+        return in_array('created_at', $colNames) && in_array('updated_at', $colNames);
     }
 }

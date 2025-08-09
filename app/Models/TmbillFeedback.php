@@ -7,17 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TmbillFeedback extends Model
 {
     protected $table = 'tmbill_feedback';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'category',
-        1 => 'name',
-        2 => 'mobile',
-        3 => 'email',
-        4 => 'msg',
-        5 => 'type_software',
-        6 => 'date',
-        7 => 'col3',
-    ];
+    protected $fillable = ['category', 'name', 'mobile', 'email', 'msg', 'type_software', 'date', 'col3'];
 }

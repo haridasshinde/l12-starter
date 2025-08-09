@@ -7,11 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TmbillDownload extends Model
 {
     protected $table = 'tmbill_download';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'link',
-        1 => 'version',
-    ];
+    protected $fillable = ['link', 'version'];
 }

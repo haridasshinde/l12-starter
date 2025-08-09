@@ -7,16 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class WebsiteAdminLogin extends Model
 {
     protected $table = 'website_admin_login';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'username',
-        1 => 'password',
-        2 => 'col1',
-        3 => 'col2',
-        4 => 'col3',
-        5 => 'col4',
-        6 => 'col5',
-    ];
+    protected $fillable = ['username', 'password', 'col1', 'col2', 'col3', 'col4', 'col5'];
 }

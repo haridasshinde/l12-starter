@@ -7,15 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeskBillCustomer extends Model
 {
     protected $table = 'desk_bill_customers';
-
-    protected $primaryKey = 'cust_mobile';
-
+    protected $primaryKey = 'tracking_id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'id',
-        1 => 'customer_name',
-        2 => 'address',
-        3 => 'time',
-    ];
+    protected $fillable = ['id', 'customer_name', 'address', 'time'];
 }

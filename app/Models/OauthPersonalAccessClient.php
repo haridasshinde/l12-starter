@@ -7,12 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OauthPersonalAccessClient extends Model
 {
     protected $table = 'oauth_personal_access_clients';
-
-    public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'client_id',
-        1 => 'created_at',
-        2 => 'updated_at',
-    ];
+    protected $primaryKey = 'id';
+    public $timestamps = true;
+    protected $fillable = ['client_id', 'created_at', 'updated_at'];
 }

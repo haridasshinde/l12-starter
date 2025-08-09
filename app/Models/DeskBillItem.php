@@ -7,16 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeskBillItem extends Model
 {
     protected $table = 'desk_bill_items';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'bill_no',
-        1 => 'item_id',
-        2 => 'item_name',
-        3 => 'qty',
-        4 => 'price',
-        5 => 'is_with_option',
-        6 => 'option_name',
-    ];
+    protected $fillable = ['bill_no', 'item_id', 'item_name', 'qty', 'price', 'is_with_option', 'option_name'];
 }

@@ -7,12 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OauthRefreshToken extends Model
 {
     protected $table = 'oauth_refresh_tokens';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'access_token_id',
-        1 => 'revoked',
-        2 => 'expires_at',
-    ];
+    protected $fillable = ['access_token_id', 'revoked', 'expires_at'];
 }

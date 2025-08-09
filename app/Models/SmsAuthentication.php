@@ -7,26 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SmsAuthentication extends Model
 {
     protected $table = 'sms_authentication';
-
-    public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'username',
-        1 => 'api_key',
-        2 => 'sender_id',
-        3 => 'peid',
-        4 => 'tempid',
-        5 => 'api_flag',
-        6 => 'author_name',
-        7 => 'total_sms',
-        8 => 'total_used_sms',
-        9 => 'total_left_sms',
-        10 => 'user_id',
-        11 => 'created_by',
-        12 => 'updated_by',
-        13 => 'is_active',
-        14 => 'remark',
-        15 => 'created_at',
-        16 => 'updated_at',
-    ];
+    protected $primaryKey = 'id';
+    public $timestamps = true;
+    protected $fillable = ['username', 'api_key', 'sender_id', 'peid', 'tempid', 'api_flag', 'author_name', 'total_sms', 'total_used_sms', 'total_left_sms', 'user_id', 'created_by', 'updated_by', 'is_active', 'remark', 'created_at', 'updated_at'];
 }

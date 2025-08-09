@@ -7,14 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OauthAuthCode extends Model
 {
     protected $table = 'oauth_auth_codes';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'user_id',
-        1 => 'client_id',
-        2 => 'scopes',
-        3 => 'revoked',
-        4 => 'expires_at',
-    ];
+    protected $fillable = ['user_id', 'client_id', 'scopes', 'revoked', 'expires_at'];
 }

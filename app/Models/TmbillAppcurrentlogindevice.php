@@ -7,20 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TmbillAppcurrentlogindevice extends Model
 {
     protected $table = 'tmbill_appcurrentlogindevices';
-
+    protected $primaryKey = 'id';
     public $timestamps = false;
-
-    protected $fillable = [
-        0 => 'Product_key',
-        1 => 'DeviceIMEI',
-        2 => 'Usermobile',
-        3 => 'isActive',
-        4 => 'LogInTime',
-        5 => 'LogOutTime',
-        6 => 'Manufacturer',
-        7 => 'AndroidVersion',
-        8 => 'model',
-        9 => 'location',
-        10 => 'osName',
-    ];
+    protected $fillable = ['Product_key', 'DeviceIMEI', 'Usermobile', 'isActive', 'LogInTime', 'LogOutTime', 'Manufacturer', 'AndroidVersion', 'model', 'location', 'osName'];
 }
