@@ -16,6 +16,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
+import Swal from 'sweetalert2'
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'User Management', href: '/users' },
@@ -59,14 +60,33 @@ function openEditSheet(user: User) {
 }
 
 function saveChanges() {
-    // Here you can emit an event or call API to save changes
-    console.log("Saving user data", selectedUser.value);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to save the changes?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save it!',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Perform your save logic here
+            console.log("Saving user data", selectedUser.value);
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'User data has been saved successfully.',
+                timer: 2000,
+                showConfirmButton: false,
+            });
 
-    // Close the sheet after saving
-    isSheetOpen.value = false;
+            isSheetOpen.value = false;
+            Object.assign(selectedUser, {
+                ...emptyUser
+            })
+        }
+    });
 
 }
-
 function cancelEdit() {
     isSheetOpen.value = false;
 }
