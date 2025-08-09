@@ -31,6 +31,7 @@ interface UsersProp {
 }
 
 const props = defineProps<{ users: UsersProp }>();
+
 </script>
 
 <template>
@@ -81,7 +82,7 @@ const props = defineProps<{ users: UsersProp }>();
                     <li v-for="link in users.links" :key="link.label" class="border-r last:border-r-0 border-gray-300">
                         <Link v-if="link.url" :href="link.url" preserve-scroll
                             class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-1"
-                            :class="link.active ? 'bg-blue-600 text-white cursor-default' : ''" aria-current="page">
+                            :class="link.active ? 'bg-blue-300 text-blue-400 cursor-default' : ''" aria-current="page">
                         <span v-html="link.label"></span>
                         </Link>
 
