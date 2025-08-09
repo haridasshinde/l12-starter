@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import Pagination from '../extra/Pagination.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'User Management', href: '/users' },
@@ -26,6 +27,8 @@ interface UsersProp {
     total: number;
     from: number | null;
     to: number | null;
+    first_page_url: string;
+    last_page_url: string;
     links: PaginationLink[];
     data: User[];
 }
@@ -77,22 +80,7 @@ const props = defineProps<{ users: UsersProp }>();
             </div>
 
             <!-- Pagination -->
-            <nav class="mt-0 flex justify-center" aria-label="Pagination">
-                <ul class="inline-flex border border-gray-300 rounded-md shadow-sm">
-                    <li v-for="link in users.links" :key="link.label" class="border-r last:border-r-0 border-gray-300">
-                        <Link v-if="link.url" :href="link.url" preserve-scroll
-                            class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-1"
-                            :class="link.active ? 'bg-blue-300 text-blue-400 cursor-default' : ''" aria-current="page">
-                        <span v-html="link.label"></span>
-                        </Link>
-
-                        <span v-else v-html="link.label"
-                            class="block px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed select-none"
-                            aria-disabled="true" />
-                    </li>
-                </ul>
-            </nav>
-
+            <Pagination :pagination="users" />
         </div>
     </AppLayout>
 </template>
