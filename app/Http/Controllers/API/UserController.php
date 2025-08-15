@@ -12,9 +12,12 @@ class UserController extends Controller
     /**
      * Display a paginated list of users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10);
+        $search = $request->input('search');
+        $users = User::latest()
+            ->when($search, fn($query) => $query->where('name', 'like', "%{$search}%"))
+            ->paginate(10);
 
         return Inertia::render('users/Index', [
             'message' => 'This is data passed from Laravel!',
