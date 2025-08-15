@@ -1,9 +1,10 @@
 <script setup lang="ts">
 /**
- * Complete working Date Range component (Vue 3 + reka-ui RangeCalendar + date-fns)
+ * Optimized Date Range Component (Vue 3 + reka-ui RangeCalendar + date-fns)
+ * Improvements: Performance, maintainability, type safety, and UX
  */
 
-import { ref, watch } from "vue"
+import { ref, computed, watch, shallowRef } from "vue"
 import type { Ref } from "vue"
 import type { DateValue } from "@internationalized/date"
 import { CalendarDate, isEqualMonth } from "@internationalized/date"
@@ -28,7 +29,7 @@ import {
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-vue-next"
 import { cn } from "@/utils"
 
-// date-fns
+// date-fns - only import what we need
 import {
     isSameDay,
     startOfWeek,
@@ -40,63 +41,143 @@ import {
     subMonths,
 } from "date-fns"
 
-
-/* -------------------- Config -------------------- */
-const WEEK_START = 0 // Sunday (match your original code)
-
-/* -------------------- Helpers -------------------- */
-/** JS Date -> CalendarDate (CalendarDate expects month as 1..12) */
-function jsToCalendarDate(d: Date): CalendarDate {
-    return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate())
-}
-
-/** CalendarDate (DateValue) -> JS Date (local midnight) */
-function calendarDateToJs(cd: DateValue): Date {
-    // using toDate from reka-ui/date converts DateValue -> JS Date
-    // ensure it's a Date (toDate returns Date)
-    return toDate(cd)
-}
+/* -------------------- Constants -------------------- */
+const WEEK_START = 0 as const // Sunday
+const LOCALE = "en-US" as const
 
 /* -------------------- Types -------------------- */
 type PresetKey = "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "last3Months"
 
-/* -------------------- State -------------------- */
-const today = new Date()
-const initialCD = jsToCalendarDate(today)
+interface PresetConfig {
+    label: string
+    key: PresetKey
+    getRange: () => { start: Date; end: Date }
+}
 
+/* -------------------- Utility Functions -------------------- */
+const dateUtils = {
+    /** Convert JS Date to CalendarDate */
+    toCalendarDate: (date: Date): CalendarDate =>
+        new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate()),
+
+    /** Convert CalendarDate to JS Date */
+    toJSDate: (calendarDate: DateValue): Date => toDate(calendarDate),
+
+    /** Check if two dates are the same day */
+    isSameDay: (date1: Date, date2: Date): boolean => isSameDay(date1, date2),
+}
+
+/* -------------------- Preset Configuration -------------------- */
+const presetConfigs: PresetConfig[] = [
+    {
+        label: "Today",
+        key: "today",
+        getRange: () => {
+            const now = new Date()
+            return { start: now, end: now }
+        }
+    },
+    {
+        label: "Yesterday",
+        key: "yesterday",
+        getRange: () => {
+            const yesterday = subDays(new Date(), 1)
+            return { start: yesterday, end: yesterday }
+        }
+    },
+    {
+        label: "This Week",
+        key: "thisWeek",
+        getRange: () => {
+            const now = new Date()
+            const start = startOfWeek(now, { weekStartsOn: WEEK_START })
+            return { start, end: now }
+        }
+    },
+    {
+        label: "Last Week",
+        key: "lastWeek",
+        getRange: () => {
+            const lastWeek = subWeeks(new Date(), 1)
+            const start = startOfWeek(lastWeek, { weekStartsOn: WEEK_START })
+            const end = endOfWeek(lastWeek, { weekStartsOn: WEEK_START })
+            return { start, end }
+        }
+    },
+    {
+        label: "Last Month",
+        key: "lastMonth",
+        getRange: () => {
+            const lastMonth = subMonths(new Date(), 1)
+            const start = startOfMonth(lastMonth)
+            const end = endOfMonth(lastMonth)
+            return { start, end }
+        }
+    },
+    {
+        label: "Last 3 Months",
+        key: "last3Months",
+        getRange: () => {
+            const now = new Date()
+            const start = startOfMonth(subMonths(now, 2))
+            return { start, end: now }
+        }
+    }
+]
+
+/* -------------------- Reactive State -------------------- */
+const today = new Date()
+const initialDate = dateUtils.toCalendarDate(today)
+
+// Use shallowRef for better performance with large objects
 const value = ref<DateRange>({
-    start: initialCD,
-    end: initialCD,
+    start: initialDate,
+    end: initialDate,
 }) as Ref<DateRange>
 
 const placeholder = ref(value.value.start) as Ref<DateValue>
 const secondMonthPlaceholder = ref(value.value.end) as Ref<DateValue>
-
-const firstMonth = ref(
-    createMonth({
-        dateObj: placeholder.value,
-        locale: "en-US",
-        fixedWeeks: true,
-        weekStartsOn: WEEK_START,
-    }),
-) as Ref<Grid<DateValue>>
-
-const secondMonth = ref(
-    createMonth({
-        dateObj: secondMonthPlaceholder.value,
-        locale: "en-US",
-        fixedWeeks: true,
-        weekStartsOn: WEEK_START,
-    }),
-) as Ref<Grid<DateValue>>
-
-const locale = ref("en-US")
-const formatter = useDateFormatter(locale.value)
-
 const activePreset = ref<PresetKey | null>("today")
 
-/* -------------------- Month nav watchers -------------------- */
-function updateMonth(reference: "first" | "second", months: number) {
+// Use shallowRef for calendar grids since they're complex objects that don't need deep reactivity
+const firstMonth = shallowRef<Grid<DateValue>>(
+    createMonth({
+        dateObj: placeholder.value,
+        locale: LOCALE,
+        fixedWeeks: false,
+        weekStartsOn: WEEK_START,
+    })
+)
+
+const secondMonth = shallowRef<Grid<DateValue>>(
+    createMonth({
+        dateObj: secondMonthPlaceholder.value,
+        locale: LOCALE,
+        fixedWeeks: false,
+        weekStartsOn: WEEK_START,
+    })
+)
+
+const formatter = useDateFormatter(LOCALE)
+
+/* -------------------- Computed Properties -------------------- */
+const displayText = computed(() => {
+    if (!value.value?.start) return "Pick a date"
+
+    const startText = formatter.custom(dateUtils.toJSDate(value.value.start), { dateStyle: 'medium' })
+
+    if (!value.value.end) return startText
+
+    const endText = formatter.custom(dateUtils.toJSDate(value.value.end), { dateStyle: 'medium' })
+    return `${startText} - ${endText}`
+})
+
+const buttonClasses = computed(() =>
+    cn('w-[320px] justify-start text-left font-normal', !value.value && 'text-muted-foreground')
+)
+
+/* -------------------- Core Functions -------------------- */
+function updateCalendarMonth(reference: "first" | "second", months: number): void {
     if (reference === "first") {
         placeholder.value = (placeholder.value as CalendarDate).add({ months })
     } else {
@@ -104,202 +185,132 @@ function updateMonth(reference: "first" | "second", months: number) {
     }
 }
 
-watch(placeholder, (_p) => {
-    firstMonth.value = createMonth({
-        dateObj: _p,
-        weekStartsOn: WEEK_START,
-        fixedWeeks: false,
-        locale: locale.value,
-    })
-    if (isEqualMonth(secondMonthPlaceholder.value as CalendarDate, _p as CalendarDate)) {
-        secondMonthPlaceholder.value = (secondMonthPlaceholder.value as CalendarDate).add({ months: 1 })
+function setDateRange(startJS: Date, endJS: Date, preset: PresetKey | null = null): void {
+    const newRange = {
+        start: dateUtils.toCalendarDate(startJS),
+        end: dateUtils.toCalendarDate(endJS)
     }
-})
 
-watch(secondMonthPlaceholder, (_s) => {
-    secondMonth.value = createMonth({
-        dateObj: _s,
-        weekStartsOn: WEEK_START,
-        fixedWeeks: false,
-        locale: locale.value,
-    })
-    if (isEqualMonth(_s as CalendarDate, placeholder.value as CalendarDate)) {
-        placeholder.value = (placeholder.value as CalendarDate).subtract({ months: 1 })
-    }
-})
-
-/* -------------------- Preset helpers -------------------- */
-function setRange(startJS: Date, endJS: Date, preset: PresetKey | null) {
-    value.value = { start: jsToCalendarDate(startJS), end: jsToCalendarDate(endJS) }
-    placeholder.value = value.value.start!
-    secondMonthPlaceholder.value = value.value.end!
+    value.value = newRange
+    placeholder.value = newRange.start
+    secondMonthPlaceholder.value = newRange.end
     activePreset.value = preset
 }
 
-function applyPreset(preset: PresetKey) {
-    const now = new Date()
-    switch (preset) {
-        case "today": {
-            setRange(now, now, "today")
-            break
-        }
-        case "yesterday": {
-            const y = subDays(now, 1)
-            setRange(y, y, "yesterday")
-            break
-        }
-        case "thisWeek": {
-            const start = startOfWeek(now, { weekStartsOn: WEEK_START })
-            setRange(start, now, "thisWeek")
-            break
-        }
-        case "lastWeek": {
-            const start = startOfWeek(subWeeks(now, 1), { weekStartsOn: WEEK_START })
-            const end = endOfWeek(subWeeks(now, 1), { weekStartsOn: WEEK_START })
-            setRange(start, end, "lastWeek")
-            break
-        }
-        case "lastMonth": {
-            const start = startOfMonth(subMonths(now, 1))
-            const end = endOfMonth(subMonths(now, 1))
-            setRange(start, end, "lastMonth")
-            break
-        }
-        case "last3Months": {
-            // first day of month two months ago -> today
-            const start = startOfMonth(subMonths(now, 2))
-            setRange(start, now, "last3Months")
-            break
-        }
-    }
+function applyPreset(preset: PresetKey): void {
+    const config = presetConfigs.find(p => p.key === preset)
+    if (!config) return
+
+    const { start, end } = config.getRange()
+    setDateRange(start, end, preset)
 }
 
-/* -------------------- Detection: restore highlight on reopen -------------------- */
-function detectPresetFromValue(): PresetKey | null {
+/* -------------------- Preset Detection -------------------- */
+function detectActivePreset(): PresetKey | null {
     if (!value.value?.start || !value.value?.end) return null
 
-    const startJS = calendarDateToJs(value.value.start)
-    const endJS = calendarDateToJs(value.value.end)
-    const now = new Date()
+    const startJS = dateUtils.toJSDate(value.value.start)
+    const endJS = dateUtils.toJSDate(value.value.end)
 
-    // Today
-    if (isSameDay(startJS, now) && isSameDay(endJS, now)) return "today"
-
-    // Yesterday
-    const y = subDays(now, 1)
-    if (isSameDay(startJS, y) && isSameDay(endJS, y)) return "yesterday"
-
-    // This week: startOfWeek -> today
-    const thisWeekStart = startOfWeek(now, { weekStartsOn: WEEK_START })
-    if (isSameDay(startJS, thisWeekStart) && isSameDay(endJS, now)) return "thisWeek"
-
-    // Last week: full week
-    const lastWeekStart = startOfWeek(subWeeks(now, 1), { weekStartsOn: WEEK_START })
-    const lastWeekEnd = endOfWeek(subWeeks(now, 1), { weekStartsOn: WEEK_START })
-    if (isSameDay(startJS, lastWeekStart) && isSameDay(endJS, lastWeekEnd)) return "lastWeek"
-
-    // Last month: full month
-    const lastMonthStart = startOfMonth(subMonths(now, 1))
-    const lastMonthEnd = endOfMonth(subMonths(now, 1))
-    if (isSameDay(startJS, lastMonthStart) && isSameDay(endJS, lastMonthEnd)) return "lastMonth"
-
-    // Last 3 months (to-date): first day of month two months ago -> today
-    const threeMonthStart = startOfMonth(subMonths(now, 2))
-    if (isSameDay(startJS, threeMonthStart) && isSameDay(endJS, now)) return "last3Months"
+    // Find matching preset by comparing with current ranges
+    for (const config of presetConfigs) {
+        const { start: presetStart, end: presetEnd } = config.getRange()
+        if (dateUtils.isSameDay(startJS, presetStart) && dateUtils.isSameDay(endJS, presetEnd)) {
+            return config.key
+        }
+    }
 
     return null
 }
 
+/* -------------------- Watchers -------------------- */
+// Optimize watchers to prevent unnecessary recalculations
+watch(placeholder, (newPlaceholder) => {
+    firstMonth.value = createMonth({
+        dateObj: newPlaceholder,
+        weekStartsOn: WEEK_START,
+        fixedWeeks: false,
+        locale: LOCALE,
+    })
+
+    // Prevent months from overlapping
+    if (isEqualMonth(secondMonthPlaceholder.value as CalendarDate, newPlaceholder as CalendarDate)) {
+        secondMonthPlaceholder.value = (secondMonthPlaceholder.value as CalendarDate).add({ months: 1 })
+    }
+}, { flush: 'post' })
+
+watch(secondMonthPlaceholder, (newSecondPlaceholder) => {
+    secondMonth.value = createMonth({
+        dateObj: newSecondPlaceholder,
+        weekStartsOn: WEEK_START,
+        fixedWeeks: false,
+        locale: LOCALE,
+    })
+
+    // Prevent months from overlapping
+    if (isEqualMonth(newSecondPlaceholder as CalendarDate, placeholder.value as CalendarDate)) {
+        placeholder.value = (placeholder.value as CalendarDate).subtract({ months: 1 })
+    }
+}, { flush: 'post' })
+
+// Watch for preset detection
 watch(
     value,
     () => {
-        activePreset.value = detectPresetFromValue()
+        activePreset.value = detectActivePreset()
     },
-    { immediate: true, deep: true },
+    { immediate: true, deep: true }
 )
 </script>
 
 <template>
     <Popover>
         <PopoverTrigger as-child>
-            <Button variant="outline"
-                :class="cn('w-[320px] justify-start text-left font-normal', !value && 'text-muted-foreground')">
+            <Button variant="outline" :class="buttonClasses">
                 <Calendar class="mr-2 h-4 w-4" />
-                <template v-if="value?.start">
-                    <template v-if="value?.end">
-                        {{ formatter.custom(toDate(value.start), { dateStyle: 'medium' }) }}
-                        -
-                        {{ formatter.custom(toDate(value.end), { dateStyle: 'medium' }) }}
-                    </template>
-                    <template v-else>
-                        {{ formatter.custom(toDate(value.start), { dateStyle: 'medium' }) }}
-                    </template>
-                </template>
-                <template v-else>Pick a date</template>
+                {{ displayText }}
             </Button>
         </PopoverTrigger>
 
         <PopoverContent class="w-auto p-0">
             <div class="flex">
-                <!-- Quick ranges -->
+                <!-- Quick Ranges Sidebar -->
                 <div class="w-48 border-r p-3 space-y-2">
-                    <div class="text-xs uppercase tracking-wide text-muted-foreground mb-2">Quick ranges</div>
+                    <div class="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                        Quick ranges
+                    </div>
 
-                    <Button variant="ghost" class="w-full justify-start"
-                        :class="activePreset === 'today' && 'bg-primary text-primary-foreground font-medium'"
-                        @click="applyPreset('today')">
-                        Today
+                    <Button v-for="preset in presetConfigs" :key="preset.key" variant="ghost"
+                        class="w-full justify-start"
+                        :class="activePreset === preset.key && 'bg-primary text-primary-foreground font-medium'"
+                        @click="applyPreset(preset.key)">
+                        {{ preset.label }}
                     </Button>
 
-                    <Button variant="ghost" class="w-full justify-start"
-                        :class="activePreset === 'yesterday' && 'bg-primary text-primary-foreground font-medium'"
-                        @click="applyPreset('yesterday')">
-                        Yesterday
-                    </Button>
-
-                    <Button variant="ghost" class="w-full justify-start"
-                        :class="activePreset === 'thisWeek' && 'bg-primary text-primary-foreground font-medium'"
-                        @click="applyPreset('thisWeek')">
-                        This Week
-                    </Button>
-
-                    <Button variant="ghost" class="w-full justify-start"
-                        :class="activePreset === 'lastWeek' && 'bg-primary text-primary-foreground font-medium'"
-                        @click="applyPreset('lastWeek')">
-                        Last Week
-                    </Button>
-
-                    <Button variant="ghost" class="w-full justify-start"
-                        :class="activePreset === 'lastMonth' && 'bg-primary text-primary-foreground font-medium'"
-                        @click="applyPreset('lastMonth')">
-                        Last Month
-                    </Button>
-
-                    <Button variant="ghost" class="w-full justify-start"
-                        :class="activePreset === 'last3Months' && 'bg-primary text-primary-foreground font-medium'"
-                        @click="applyPreset('last3Months')">
-                        Last 3 Months
-                    </Button>
-
-                    <div class="pt-1 text-xs text-muted-foreground">Or pick a custom range →</div>
+                    <div class="pt-1 text-xs text-muted-foreground">
+                        Or pick a custom range →
+                    </div>
                 </div>
 
-                <!-- Calendars -->
+                <!-- Dual Calendar View -->
                 <RangeCalendarRoot v-slot="{ weekDays }" v-model="value" v-model:placeholder="placeholder" class="p-3">
                     <div class="flex flex-col gap-y-4 mt-4 sm:flex-row sm:gap-x-4 sm:gap-y-0">
+                        <!-- First Month -->
                         <div class="flex flex-col gap-4">
                             <div class="flex items-center justify-between">
                                 <button
                                     :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
-                                    @click="updateMonth('first', -1)">
+                                    @click="updateCalendarMonth('first', -1)" aria-label="Previous month">
                                     <ChevronLeft class="h-4 w-4" />
                                 </button>
-                                <div :class="cn('text-sm font-medium')">
+
+                                <div class="text-sm font-medium">
                                     {{ formatter.fullMonthAndYear(toDate(firstMonth.value)) }}
                                 </div>
+
                                 <button
                                     :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
-                                    @click="updateMonth('first', 1)">
+                                    @click="updateCalendarMonth('first', 1)" aria-label="Next month">
                                     <ChevronRight class="h-4 w-4" />
                                 </button>
                             </div>
@@ -314,9 +325,9 @@ watch(
                                 </RangeCalendarGridHead>
                                 <RangeCalendarGridBody>
                                     <RangeCalendarGridRow v-for="(weekDates, index) in firstMonth.rows"
-                                        :key="`weekDate-${index}`" class="mt-2 w-full">
-                                        <RangeCalendarCell v-for="weekDate in weekDates" :key="weekDate.toString()"
-                                            :date="weekDate">
+                                        :key="`first-week-${index}`" class="mt-2 w-full">
+                                        <RangeCalendarCell v-for="weekDate in weekDates"
+                                            :key="`first-${weekDate.toString()}`" :date="weekDate">
                                             <RangeCalendarCellTrigger :day="weekDate" :month="firstMonth.value" />
                                         </RangeCalendarCell>
                                     </RangeCalendarGridRow>
@@ -324,19 +335,22 @@ watch(
                             </RangeCalendarGrid>
                         </div>
 
+                        <!-- Second Month -->
                         <div class="flex flex-col gap-4">
                             <div class="flex items-center justify-between">
                                 <button
                                     :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
-                                    @click="updateMonth('second', -1)">
+                                    @click="updateCalendarMonth('second', -1)" aria-label="Previous month">
                                     <ChevronLeft class="h-4 w-4" />
                                 </button>
-                                <div :class="cn('text-sm font-medium')">
+
+                                <div class="text-sm font-medium">
                                     {{ formatter.fullMonthAndYear(toDate(secondMonth.value)) }}
                                 </div>
+
                                 <button
                                     :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
-                                    @click="updateMonth('second', 1)">
+                                    @click="updateCalendarMonth('second', 1)" aria-label="Next month">
                                     <ChevronRight class="h-4 w-4" />
                                 </button>
                             </div>
@@ -351,9 +365,9 @@ watch(
                                 </RangeCalendarGridHead>
                                 <RangeCalendarGridBody>
                                     <RangeCalendarGridRow v-for="(weekDates, index) in secondMonth.rows"
-                                        :key="`weekDate-${index}`" class="mt-2 w-full">
-                                        <RangeCalendarCell v-for="weekDate in weekDates" :key="weekDate.toString()"
-                                            :date="weekDate">
+                                        :key="`second-week-${index}`" class="mt-2 w-full">
+                                        <RangeCalendarCell v-for="weekDate in weekDates"
+                                            :key="`second-${weekDate.toString()}`" :date="weekDate">
                                             <RangeCalendarCellTrigger :day="weekDate" :month="secondMonth.value" />
                                         </RangeCalendarCell>
                                     </RangeCalendarGridRow>
