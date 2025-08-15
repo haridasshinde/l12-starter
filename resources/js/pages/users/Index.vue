@@ -16,6 +16,16 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
+
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
 import Swal from 'sweetalert2'
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -90,6 +100,9 @@ function saveChanges() {
 function cancelEdit() {
     isSheetOpen.value = false;
 }
+
+import DateFilterDropdown from '@/components/DateFilterDropdown.vue'
+const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
 </script>
 
 <template>
@@ -99,6 +112,32 @@ function cancelEdit() {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <div class="relative overflow-x-auto rounded-lg">
+
+                <div class="flex items-center py-3">
+                    <DateFilterDropdown v-model="range" :fullDay="true" />
+                    <Button variant="outline" @click="openEditSheet(selectedUser)">
+                        Filter
+                    </Button>
+                    <Select>
+                        <SelectTrigger class="w-[180px]">
+                            <SelectValue placeholder="Search field" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="name">
+                                    Name
+                                </SelectItem>
+                                <SelectItem value="email">
+                                    Email
+                                </SelectItem>
+                                <SelectItem value="phone">
+                                    Phone
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    <Input type="text" placeholder="Search" />
+                </div>
                 <table class="min-w-full text-sm text-left text-gray-600 dark:text-gray-300">
                     <thead
                         class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400 uppercase text-xs tracking-wide">
