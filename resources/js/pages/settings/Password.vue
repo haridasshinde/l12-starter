@@ -57,31 +57,25 @@ const updatePassword = () => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
+
         <Head title="Password settings" />
 
         <SettingsLayout>
             <div class="space-y-6">
-                <HeadingSmall title="Update password" description="Ensure your account is using a long, random password to stay secure" />
+                <HeadingSmall title="Update password"
+                    description="Ensure your account is using a long, random password to stay secure" />
 
-                <form @submit.prevent="updatePassword" class="space-y-6">
+                <form method="POST" @submit.prevent="updatePassword" class="space-y-6">
                     <!-- Current Password -->
                     <div class="grid gap-2">
                         <Label for="current_password">Current password</Label>
                         <div class="relative">
-                            <Input
-                                id="current_password"
-                                ref="currentPasswordInput"
-                                v-model="form.current_password"
-                                :type="showCurrentPassword ? 'text' : 'password'"
-                                class="mt-1 block w-full pr-10"
-                                autocomplete="current-password"
-                                placeholder="Current password"
-                            />
-                            <button
-                                type="button"
+                            <Input id="current_password" ref="currentPasswordInput" v-model="form.current_password"
+                                :type="showCurrentPassword ? 'text' : 'password'" class="mt-1 block w-full pr-10"
+                                autocomplete="current-password" placeholder="Current password" />
+                            <button type="button"
                                 class="absolute top-1/2 right-2 -translate-y-1/2 text-sm text-gray-500"
-                                @click="showCurrentPassword = !showCurrentPassword"
-                            >
+                                @click="showCurrentPassword = !showCurrentPassword">
                                 {{ showCurrentPassword ? '🙈' : '👁️' }}
                             </button>
                         </div>
@@ -92,20 +86,12 @@ const updatePassword = () => {
                     <div class="grid gap-2">
                         <Label for="password">New password</Label>
                         <div class="relative">
-                            <Input
-                                id="password"
-                                ref="passwordInput"
-                                v-model="form.password"
-                                :type="showNewPassword ? 'text' : 'password'"
-                                class="mt-1 block w-full pr-10"
-                                autocomplete="new-password"
-                                placeholder="New password"
-                            />
-                            <button
-                                type="button"
+                            <Input id="password" ref="passwordInput" v-model="form.password"
+                                :type="showNewPassword ? 'text' : 'password'" class="mt-1 block w-full pr-10"
+                                autocomplete="new-password" placeholder="New password" />
+                            <button type="button"
                                 class="absolute top-1/2 right-2 -translate-y-1/2 text-sm text-gray-500"
-                                @click="showNewPassword = !showNewPassword"
-                            >
+                                @click="showNewPassword = !showNewPassword">
                                 {{ showNewPassword ? '🙈' : '👁️' }}
                             </button>
                         </div>
@@ -116,19 +102,12 @@ const updatePassword = () => {
                     <div class="grid gap-2">
                         <Label for="password_confirmation">Confirm password</Label>
                         <div class="relative">
-                            <Input
-                                id="password_confirmation"
-                                v-model="form.password_confirmation"
-                                :type="showConfirmPassword ? 'text' : 'password'"
-                                class="mt-1 block w-full pr-10"
-                                autocomplete="new-password"
-                                placeholder="Confirm password"
-                            />
-                            <button
-                                type="button"
+                            <Input id="password_confirmation" v-model="form.password_confirmation"
+                                :type="showConfirmPassword ? 'text' : 'password'" class="mt-1 block w-full pr-10"
+                                autocomplete="new-password" placeholder="Confirm password" />
+                            <button type="button"
                                 class="absolute top-1/2 right-2 -translate-y-1/2 text-sm text-gray-500"
-                                @click="showConfirmPassword = !showConfirmPassword"
-                            >
+                                @click="showConfirmPassword = !showConfirmPassword">
                                 {{ showConfirmPassword ? '🙈' : '👁️' }}
                             </button>
                         </div>
@@ -139,12 +118,8 @@ const updatePassword = () => {
                     <div class="flex items-center gap-4">
                         <Button :disabled="form.processing">Save password</Button>
 
-                        <Transition
-                            enter-active-class="transition ease-in-out"
-                            enter-from-class="opacity-0"
-                            leave-active-class="transition ease-in-out"
-                            leave-to-class="opacity-0"
-                        >
+                        <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0"
+                            leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
                             <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
                         </Transition>
                     </div>
