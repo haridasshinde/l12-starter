@@ -1,34 +1,20 @@
 <script setup lang="ts">
-import type { DateValue } from "@internationalized/date"
-import type { DateRange } from "reka-ui"
-import type { Grid } from "reka-ui/date"
-import type { Ref } from "vue"
-
-import {
-    CalendarDate,
-    isEqualMonth,
-    fromDate,
-    getLocalTimeZone,
-} from "@internationalized/date"
+/**
+ * Complete working Date Range component (Vue 3 + reka-ui RangeCalendar + date-fns)
+ */
 
 import { ref, watch } from "vue"
-
-import {
-    Calendar,
-    ChevronLeft,
-    ChevronRight,
-} from "lucide-vue-next"
+import type { Ref } from "vue"
+import type { DateValue } from "@internationalized/date"
+import { CalendarDate, isEqualMonth } from "@internationalized/date"
 
 import { RangeCalendarRoot, useDateFormatter } from "reka-ui"
 import { createMonth, toDate } from "reka-ui/date"
+import type { Grid } from "reka-ui/date"
+import type { DateRange } from "reka-ui"
 
-import { cn } from "@/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import {
     RangeCalendarCell,
     RangeCalendarCellTrigger,
@@ -39,9 +25,12 @@ import {
     RangeCalendarHeadCell,
 } from "@/components/ui/range-calendar"
 
-// date-fns (only what's needed)
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-vue-next"
+import { cn } from "@/utils"
+
+// date-fns
 import {
-    startOfDay,
+    isSameDay,
     startOfWeek,
     endOfWeek,
     startOfMonth,
@@ -51,23 +40,34 @@ import {
     subMonths,
 } from "date-fns"
 
-/* -------------------- State -------------------- */
+
+/* -------------------- Config -------------------- */
+const WEEK_START = 0 // Sunday (match your original code)
+
+/* -------------------- Helpers -------------------- */
+/** JS Date -> CalendarDate (CalendarDate expects month as 1..12) */
+function jsToCalendarDate(d: Date): CalendarDate {
+    return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate())
+}
+
+/** CalendarDate (DateValue) -> JS Date (local midnight) */
+function calendarDateToJs(cd: DateValue): Date {
+    // using toDate from reka-ui/date converts DateValue -> JS Date
+    // ensure it's a Date (toDate returns Date)
+    return toDate(cd)
+}
+
+/* -------------------- Types -------------------- */
 type PresetKey = "today" | "yesterday" | "thisWeek" | "lastWeek" | "lastMonth" | "last3Months"
 
-const TZ = getLocalTimeZone()
-const WEEK_START = 0 // Sunday to match your calendar config
-
-const todayJS = new Date()
+/* -------------------- State -------------------- */
+const today = new Date()
+const initialCD = jsToCalendarDate(today)
 
 const value = ref<DateRange>({
-    start: fromDate(startOfDay(todayJS), TZ) as unknown as CalendarDate,
-    end: fromDate(startOfDay(todayJS), TZ) as unknown as CalendarDate,
-})
-
-const activePreset = ref<null | PresetKey>("today")
-
-const locale = ref("en-US")
-const formatter = useDateFormatter(locale.value)
+    start: initialCD,
+    end: initialCD,
+}) as Ref<DateRange>
 
 const placeholder = ref(value.value.start) as Ref<DateValue>
 const secondMonthPlaceholder = ref(value.value.end) as Ref<DateValue>
@@ -75,7 +75,7 @@ const secondMonthPlaceholder = ref(value.value.end) as Ref<DateValue>
 const firstMonth = ref(
     createMonth({
         dateObj: placeholder.value,
-        locale: locale.value,
+        locale: "en-US",
         fixedWeeks: true,
         weekStartsOn: WEEK_START,
     }),
@@ -84,13 +84,18 @@ const firstMonth = ref(
 const secondMonth = ref(
     createMonth({
         dateObj: secondMonthPlaceholder.value,
-        locale: locale.value,
+        locale: "en-US",
         fixedWeeks: true,
         weekStartsOn: WEEK_START,
     }),
 ) as Ref<Grid<DateValue>>
 
-/* -------------------- Month Nav -------------------- */
+const locale = ref("en-US")
+const formatter = useDateFormatter(locale.value)
+
+const activePreset = ref<PresetKey | null>("today")
+
+/* -------------------- Month nav watchers -------------------- */
 function updateMonth(reference: "first" | "second", months: number) {
     if (reference === "first") {
         placeholder.value = (placeholder.value as CalendarDate).add({ months })
@@ -123,14 +128,11 @@ watch(secondMonthPlaceholder, (_s) => {
     }
 })
 
-/* -------------------- Quick Ranges -------------------- */
-function toCD(d: Date) {
-    return fromDate(startOfDay(d), TZ) as unknown as CalendarDate
-}
+/* -------------------- Preset helpers -------------------- */
 function setRange(startJS: Date, endJS: Date, preset: PresetKey | null) {
-    value.value = { start: toCD(startJS), end: toCD(endJS) }
-    placeholder.value = value.value.start
-    secondMonthPlaceholder.value = value.value.end
+    value.value = { start: jsToCalendarDate(startJS), end: jsToCalendarDate(endJS) }
+    placeholder.value = value.value.start!
+    secondMonthPlaceholder.value = value.value.end!
     activePreset.value = preset
 }
 
@@ -148,7 +150,6 @@ function applyPreset(preset: PresetKey) {
         }
         case "thisWeek": {
             const start = startOfWeek(now, { weekStartsOn: WEEK_START })
-            // end = today (to-date)
             setRange(start, now, "thisWeek")
             break
         }
@@ -165,7 +166,7 @@ function applyPreset(preset: PresetKey) {
             break
         }
         case "last3Months": {
-            // from first day of the month two months ago → today (to-date)
+            // first day of month two months ago -> today
             const start = startOfMonth(subMonths(now, 2))
             setRange(start, now, "last3Months")
             break
@@ -173,43 +174,42 @@ function applyPreset(preset: PresetKey) {
     }
 }
 
-/* -------------------- Detection (keeps highlight on reopen) -------------------- */
+/* -------------------- Detection: restore highlight on reopen -------------------- */
 function detectPresetFromValue(): PresetKey | null {
     if (!value.value?.start || !value.value?.end) return null
 
-    const startJS = startOfDay(toDate(value.value.start))
-    const endJS = startOfDay(toDate(value.value.end))
-    const today = startOfDay(new Date())
+    const startJS = calendarDateToJs(value.value.start)
+    const endJS = calendarDateToJs(value.value.end)
+    const now = new Date()
 
-    const eq = (a: Date, b: Date) => a.getTime() === b.getTime()
+    // Today
+    if (isSameDay(startJS, now) && isSameDay(endJS, now)) return "today"
 
-    // Today / Yesterday
-    if (eq(startJS, today) && eq(endJS, today)) return "today"
-    const y = subDays(today, 1)
-    if (eq(startJS, y) && eq(endJS, y)) return "yesterday"
+    // Yesterday
+    const y = subDays(now, 1)
+    if (isSameDay(startJS, y) && isSameDay(endJS, y)) return "yesterday"
 
-    // This Week (startOfWeek -> today)
-    const thisWeekStart = startOfWeek(today, { weekStartsOn: WEEK_START })
-    if (eq(startJS, thisWeekStart) && eq(endJS, today)) return "thisWeek"
+    // This week: startOfWeek -> today
+    const thisWeekStart = startOfWeek(now, { weekStartsOn: WEEK_START })
+    if (isSameDay(startJS, thisWeekStart) && isSameDay(endJS, now)) return "thisWeek"
 
-    // Last Week (full week)
-    const lastWeekStart = startOfWeek(subWeeks(today, 1), { weekStartsOn: WEEK_START })
-    const lastWeekEnd = endOfWeek(subWeeks(today, 1), { weekStartsOn: WEEK_START })
-    if (eq(startJS, lastWeekStart) && eq(endJS, lastWeekEnd)) return "lastWeek"
+    // Last week: full week
+    const lastWeekStart = startOfWeek(subWeeks(now, 1), { weekStartsOn: WEEK_START })
+    const lastWeekEnd = endOfWeek(subWeeks(now, 1), { weekStartsOn: WEEK_START })
+    if (isSameDay(startJS, lastWeekStart) && isSameDay(endJS, lastWeekEnd)) return "lastWeek"
 
-    // Last Month (full month)
-    const lastMonthStart = startOfMonth(subMonths(today, 1))
-    const lastMonthEnd = endOfMonth(subMonths(today, 1))
-    if (eq(startJS, lastMonthStart) && eq(endJS, lastMonthEnd)) return "lastMonth"
+    // Last month: full month
+    const lastMonthStart = startOfMonth(subMonths(now, 1))
+    const lastMonthEnd = endOfMonth(subMonths(now, 1))
+    if (isSameDay(startJS, lastMonthStart) && isSameDay(endJS, lastMonthEnd)) return "lastMonth"
 
-    // Last 3 Months (to-date)
-    const threeMonthStart = startOfMonth(subMonths(today, 2))
-    if (eq(startJS, threeMonthStart) && eq(endJS, today)) return "last3Months"
+    // Last 3 months (to-date): first day of month two months ago -> today
+    const threeMonthStart = startOfMonth(subMonths(now, 2))
+    if (isSameDay(startJS, threeMonthStart) && isSameDay(endJS, now)) return "last3Months"
 
     return null
 }
 
-// Keep activePreset in sync always (mount + any change)
 watch(
     value,
     () => {
@@ -227,19 +227,15 @@ watch(
                 <Calendar class="mr-2 h-4 w-4" />
                 <template v-if="value?.start">
                     <template v-if="value?.end">
-                        {{
-                            formatter.custom(toDate(value.start), { dateStyle: 'medium' })
-                        }}
+                        {{ formatter.custom(toDate(value.start), { dateStyle: 'medium' }) }}
                         -
-                        {{
-                            formatter.custom(toDate(value.end), { dateStyle: 'medium' })
-                        }}
+                        {{ formatter.custom(toDate(value.end), { dateStyle: 'medium' }) }}
                     </template>
                     <template v-else>
                         {{ formatter.custom(toDate(value.start), { dateStyle: 'medium' }) }}
                     </template>
                 </template>
-                <template v-else> Pick a date </template>
+                <template v-else>Pick a date</template>
             </Button>
         </PopoverTrigger>
 
@@ -291,22 +287,19 @@ watch(
                 <!-- Calendars -->
                 <RangeCalendarRoot v-slot="{ weekDays }" v-model="value" v-model:placeholder="placeholder" class="p-3">
                     <div class="flex flex-col gap-y-4 mt-4 sm:flex-row sm:gap-x-4 sm:gap-y-0">
-                        <!-- First month -->
                         <div class="flex flex-col gap-4">
                             <div class="flex items-center justify-between">
-                                <button :class="cn(
-                                    buttonVariants({ variant: 'outline' }),
-                                    'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
-                                )" @click="updateMonth('first', -1)">
+                                <button
+                                    :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
+                                    @click="updateMonth('first', -1)">
                                     <ChevronLeft class="h-4 w-4" />
                                 </button>
-                                <div class="text-sm font-medium">
+                                <div :class="cn('text-sm font-medium')">
                                     {{ formatter.fullMonthAndYear(toDate(firstMonth.value)) }}
                                 </div>
-                                <button :class="cn(
-                                    buttonVariants({ variant: 'outline' }),
-                                    'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
-                                )" @click="updateMonth('first', 1)">
+                                <button
+                                    :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
+                                    @click="updateMonth('first', 1)">
                                     <ChevronRight class="h-4 w-4" />
                                 </button>
                             </div>
@@ -331,22 +324,19 @@ watch(
                             </RangeCalendarGrid>
                         </div>
 
-                        <!-- Second month -->
                         <div class="flex flex-col gap-4">
                             <div class="flex items-center justify-between">
-                                <button :class="cn(
-                                    buttonVariants({ variant: 'outline' }),
-                                    'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
-                                )" @click="updateMonth('second', -1)">
+                                <button
+                                    :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
+                                    @click="updateMonth('second', -1)">
                                     <ChevronLeft class="h-4 w-4" />
                                 </button>
-                                <div class="text-sm font-medium">
+                                <div :class="cn('text-sm font-medium')">
                                     {{ formatter.fullMonthAndYear(toDate(secondMonth.value)) }}
                                 </div>
-                                <button :class="cn(
-                                    buttonVariants({ variant: 'outline' }),
-                                    'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100',
-                                )" @click="updateMonth('second', 1)">
+                                <button
+                                    :class="cn(buttonVariants({ variant: 'outline' }), 'h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100')"
+                                    @click="updateMonth('second', 1)">
                                     <ChevronRight class="h-4 w-4" />
                                 </button>
                             </div>
