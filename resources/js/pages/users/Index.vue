@@ -107,17 +107,17 @@ function cancelEdit() {
     isSheetOpen.value = false;
 }
 
-const range = ref<{ start: Date | null, end: Date | null, startMilis: number | null }>({ start: null, end: null, startMilis: null })
+const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
 
 watch(range, (val) => {
     if (!val) return
 
-    const { start, end, startMilis } = val
+    const { start, end } = val
 
     const formattedStart = start ? format(toDate(start), "yyyy-MM-dd HH:mm:ss") : null
     const formattedEnd = end ? format(toDate(end), "yyyy-MM-dd HH:mm:ss") : null
 
-    console.log("📅 Parent got new range:", { start: formattedStart, end: formattedEnd, startMilis })
+    console.log("📅 Parent got new range:", { start: formattedStart, end: formattedEnd })
 })
 </script>
 
