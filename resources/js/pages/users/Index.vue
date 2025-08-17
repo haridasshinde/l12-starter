@@ -24,9 +24,11 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
-
+} from "@/components/ui/select";
+import { Download, Plus, SlidersHorizontal } from 'lucide-vue-next';
 import Swal from 'sweetalert2'
+import { formatDateTime } from "@/utils/dateFormat";
+import DateFilterDropdown from '@/components/DateFilterDropdown.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'User Management', href: '/users' },
@@ -36,6 +38,8 @@ interface User {
     id: number;
     name: string;
     email: string;
+    created_at: string;
+    updated_at: string;  // optional
 }
 
 interface PaginationLink {
@@ -61,7 +65,7 @@ const props = defineProps<{ users: UsersProp }>();
 
 // Sheet control
 const isSheetOpen = ref(false);
-const emptyUser = { id: 0, name: '', email: '' }
+const emptyUser = { id: 0, name: '', email: '', created_at: '', updated_at: '' }
 const selectedUser = ref<User>({ ...emptyUser })
 
 function openEditSheet(user: User) {
@@ -101,8 +105,6 @@ function cancelEdit() {
     isSheetOpen.value = false;
 }
 
-import DateFilterDropdown from '@/components/DateFilterDropdown.vue'
-import { Download, Plus, SlidersHorizontal } from 'lucide-vue-next';
 const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
 </script>
 
@@ -160,6 +162,7 @@ const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: 
                             <th scope="col" class="p-3">#</th>
                             <th scope="col" class="px-5 py-1">Name</th>
                             <th scope="col" class="px-5 py-1">Email</th>
+                            <th scope="col" class="px-5 py-1">Registered At</th>
                             <th scope="col" class="px-5 py-1">Action</th>
                         </tr>
                     </thead>
@@ -176,6 +179,7 @@ const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: 
                                 {{ user.name }}
                             </th>
                             <td class="px-5 py-2">{{ user.email }}</td>
+                            <td class="px-5 py-2">{{ formatDateTime(user.created_at) }}</td>
                             <td class="px-5 py-2">
                                 <Button variant="outline" @click="openEditSheet(user)">
                                     Edit
