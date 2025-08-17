@@ -95,11 +95,9 @@ watch(range, (val) => {
                                 class="w-[200px] rounded-none border-r-0" />
 
                             <!-- Search Button -->
-                            <Button variant="outline" class="flex items-center gap-2 px-4 rounded-l-none rounded-r-md
-         transition-colors duration-200
-         hover:bg-blue-50
-         disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed
-         disabled:hover:bg-gray-200" :disabled="!search" @click.prevent="applyFilters">
+                            <Button variant="outline"
+                                class="flex items-center gap-2 px-4 rounded-l-none rounded-r-md transition-colors duration-200 hover:bg-blue-50disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-200"
+                                :disabled="!search" @click.prevent="applyFilters">
                                 <Search :class="!search ? 'text-gray-400' : 'text-blue-500'" />
                                 Search
                             </Button>
@@ -115,7 +113,6 @@ watch(range, (val) => {
                         </Button>
                     </div>
                 </div>
-
                 <!-- Table -->
                 <table class="min-w-full text-sm text-left text-gray-600 dark:text-gray-300">
                     <thead

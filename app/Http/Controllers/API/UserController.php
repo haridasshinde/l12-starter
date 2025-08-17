@@ -64,10 +64,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $user,
-        ]);
+        return redirect()->route('users.index')
+            ->with('success', 'User details fetched successfully.');
     }
 
     /**

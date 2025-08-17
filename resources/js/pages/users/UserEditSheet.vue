@@ -19,7 +19,9 @@ const emit = defineEmits<{
 
 // ✅ make a local copy of the user
 const localUser = ref<User>({ ...props.user })
-
+function saveUser() {
+    emit('save', localUser.value)
+}
 // keep local copy in sync when prop changes
 watch(() => props.user, (val) => {
     localUser.value = { ...val }
@@ -33,8 +35,7 @@ watch(() => props.user, (val) => {
                 <SheetTitle>Edit profile</SheetTitle>
                 <SheetDescription>Make changes to your profile here. Click save when you're done.</SheetDescription>
             </SheetHeader>
-
-            <form @submit.prevent="emit('save', localUser)" class="grid gap-4 py-4 px-4">
+            <form @submit.prevent="saveUser" class="grid gap-4 py-4 px-4">
                 <div class="grid grid-cols-4 items-center gap-4">
                     <Label for="name" class="text-right">Name</Label>
                     <Input id="name" v-model="localUser.name" class="col-span-3" required />

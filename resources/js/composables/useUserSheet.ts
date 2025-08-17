@@ -8,9 +8,11 @@ const emptyUser: User = { id: 0, name: '', email: '', created_at: '', updated_at
 export function useUserSheet() {
     const isSheetOpen = ref(false);
     const selectedUser = ref<User>({ ...emptyUser });
-
-    function openEditSheet(user: User) {
+    function setUserData(user: User) {
         selectedUser.value = { ...user };
+    }
+    function openEditSheet(user: User) {
+        setUserData(user);
         isSheetOpen.value = true;
     }
 
@@ -18,7 +20,7 @@ export function useUserSheet() {
         isSheetOpen.value = false;
     }
 
-    async function saveChanges() {
+    async function saveChanges(updatedUser: User) {
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: 'Do you want to save the changes?',
@@ -31,8 +33,7 @@ export function useUserSheet() {
         if (!result.isConfirmed) return;
 
         try {
-            console.log('Saving user data', selectedUser.value);
-
+            setUserData(updatedUser);
             const userData = selectedUser.value;
 
             if (userData.id && userData.id > 0) {
