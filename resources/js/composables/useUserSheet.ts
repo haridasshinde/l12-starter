@@ -6,14 +6,21 @@ import { route } from 'ziggy-js';
 const emptyUser: User = { id: 0, name: '', email: '', created_at: '', updated_at: '' };
 
 export function useUserSheet() {
+    const isEditUser = ref(false);
     const isSheetOpen = ref(false);
     const selectedUser = ref<User>({ ...emptyUser });
     function setUserData(user: User) {
         selectedUser.value = { ...user };
     }
+    function newUserCreate() {
+        setUserData(emptyUser);
+        isSheetOpen.value = true;
+        isEditUser.value = false;
+    }
     function openEditSheet(user: User) {
         setUserData(user);
         isSheetOpen.value = true;
+        isEditUser.value = true;
     }
 
     function cancelEdit() {
@@ -69,8 +76,10 @@ export function useUserSheet() {
 
     return {
         isSheetOpen,
+        isEditUser,
         selectedUser,
         openEditSheet,
+        newUserCreate,
         cancelEdit,
         saveChanges,
     };

@@ -23,7 +23,7 @@ import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'User Management', href: '/users' }]
 const props = defineProps<{ users: UsersProp }>()
 
-const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges } = useUserSheet()
+const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges, newUserCreate, isEditUser } = useUserSheet()
 const isFullDay = ref(true)
 const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
 
@@ -108,7 +108,7 @@ watch(range, (val) => {
                         <Button variant="outline" size="sm">
                             <Download /> Export
                         </Button>
-                        <Button>
+                        <Button @click="newUserCreate">
                             <Plus /> Add User
                         </Button>
                     </div>
@@ -160,7 +160,8 @@ watch(range, (val) => {
             <Pagination :pagination="props.users" v-if="props.users.data.length" />
 
             <!-- User Edit Sheet -->
-            <UserEditSheet v-model:open="isSheetOpen" :user="selectedUser" @save="saveChanges" @cancel="cancelEdit" />
+            <UserEditSheet v-model:open="isSheetOpen" :isEditUser="isEditUser" :user="selectedUser" @save="saveChanges"
+                @cancel="cancelEdit" />
 
         </div>
     </AppLayout>

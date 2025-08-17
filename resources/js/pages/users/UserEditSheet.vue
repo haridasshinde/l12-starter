@@ -11,7 +11,7 @@ import { ref, watch } from "vue"
 // ✅ two-way binding for open
 const open = defineModel<boolean>('open')
 
-const props = defineProps<{ user: User }>()
+const props = defineProps<{ user: User, isEditUser: boolean }>()
 const emit = defineEmits<{
     (e: "save", user: User): void
     (e: "cancel"): void
@@ -32,7 +32,7 @@ watch(() => props.user, (val) => {
     <Sheet v-model:open="open">
         <SheetContent>
             <SheetHeader>
-                <SheetTitle>Edit profile</SheetTitle>
+                <SheetTitle>{{ isEditUser ? 'Edit User' : "New User" }}</SheetTitle>
                 <SheetDescription>Make changes to your profile here. Click save when you're done.</SheetDescription>
             </SheetHeader>
             <form @submit.prevent="saveUser" class="grid gap-4 py-4 px-4">
