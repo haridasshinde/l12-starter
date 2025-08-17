@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\SearchTarget;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -15,9 +16,13 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search = $request->q;
+        $target = $request->target;
+
         $users = User::latest()
-            ->when($search, fn($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($search && SearchTarget::isValid($target), function ($query) use ($search, $target) {
+                $query->where($target, 'like', "%{$search}%");
+            })
             ->when($request->start && $request->end, function ($q) use ($request) {
                 $q->whereBetween('created_at', [
                     $request->start,
