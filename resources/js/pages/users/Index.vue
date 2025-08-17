@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import {
     Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Download, Plus, SlidersHorizontal, Info, Search } from 'lucide-vue-next'
+import { Download, Plus, Info, Search } from 'lucide-vue-next'
 import { formatDateTime } from "@/utils/dateFormat"
 import DateFilterDropdown from '@/components/DateFilterDropdown.vue'
 import { format, toDate } from 'date-fns'
@@ -74,10 +74,10 @@ watch(range, (val) => {
                 <div class="flex items-center justify-between py-3">
                     <div class="flex items-center gap-3">
                         <DateFilterDropdown v-model="range" :fullDay="isFullDay" />
-                        <Button variant="outline" @click="openEditSheet(selectedUser)">
+                        <!-- <Button variant="outline" @click="openEditSheet(selectedUser)">
                             <SlidersHorizontal /> Filter
-                        </Button>
-                        <div class="flex">
+                        </Button> -->
+                        <div class="flex items-center">
                             <Select v-model="searchField">
                                 <SelectTrigger class="w-[140px] rounded-r-none border-r-0">
                                     <SelectValue placeholder="Search field" />
@@ -92,10 +92,16 @@ watch(range, (val) => {
                             </Select>
 
                             <Input type="text" placeholder="Search" v-model="search"
-                                class="w-[200px] rounded-l-none rounded-r-none border-r-0" />
+                                class="w-[200px] rounded-none border-r-0" />
 
-                            <Button variant="outline" class="rounded-l-none rounded-r-m" @click.prevent="applyFilters">
-                                <Search /> Search
+                            <!-- Search Button -->
+                            <Button variant="outline" class="flex items-center gap-2 px-4 rounded-l-none rounded-r-md
+         transition-colors duration-200
+         hover:bg-blue-50
+         disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed
+         disabled:hover:bg-gray-200" :disabled="!search" @click.prevent="applyFilters">
+                                <Search :class="!search ? 'text-gray-400' : 'text-blue-500'" />
+                                Search
                             </Button>
                         </div>
 
