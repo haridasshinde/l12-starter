@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import {
     Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Download, Plus, Info, Search } from 'lucide-vue-next'
+import { Download, Plus, Info, Search, Trash, UserRoundPen } from 'lucide-vue-next'
 import { formatDateTime } from "@/utils/dateFormat"
 import DateFilterDropdown from '@/components/DateFilterDropdown.vue'
 import { format, toDate } from 'date-fns'
@@ -23,7 +23,7 @@ import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'User Management', href: '/users' }]
 const props = defineProps<{ users: UsersProp }>()
 
-const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges, newUserCreate, isEditUser } = useUserSheet()
+const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges, newUserCreate, isEditUser, deleteUser } = useUserSheet()
 const isFullDay = ref(true)
 const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
 
@@ -142,8 +142,14 @@ watch(range, (val) => {
                             </td>
                             <td class="px-5 py-2">{{ user.email }}</td>
                             <td class="px-5 py-2">{{ formatDateTime(user.created_at) }}</td>
-                            <td class="px-5 py-2">
-                                <Button variant="outline" @click="openEditSheet(user)">Edit</Button>
+                            <td class="px-5 py-2 flex gap-2">
+                                <Button variant="outline" @click="openEditSheet(user)">
+                                    <UserRoundPen /> Edit
+                                </Button>
+                                <Button variant="destructive" @click="deleteUser(user)">
+                                    <Trash />
+                                    Delete
+                                </Button>
                             </td>
                         </tr>
                         <td class="px-5 py-2 text-center" colspan="5" v-if="!props.users.data.length">

@@ -74,6 +74,27 @@ export function useUserSheet() {
         }
     }
 
+    function deleteUser(user: User) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `You are about to delete ${user.name}. This action cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform delete logic here, e.g., API call
+                console.log('User deleted:', user);
+                // Optionally show success message
+                router.delete(route('users.delete', { id: user.id }));
+
+                Swal.fire('Deleted!', `${user.name} has been deleted.`, 'success');
+            }
+        });
+    }
     return {
         isSheetOpen,
         isEditUser,
@@ -82,5 +103,6 @@ export function useUserSheet() {
         newUserCreate,
         cancelEdit,
         saveChanges,
+        deleteUser,
     };
 }
