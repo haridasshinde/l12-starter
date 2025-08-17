@@ -10,7 +10,7 @@ import type { DateValue } from "@internationalized/date"
 import { CalendarDate, isEqualMonth } from "@internationalized/date"
 
 import { RangeCalendarRoot, useDateFormatter } from "reka-ui"
-import { createMonth, toDate } from "reka-ui/date"
+import { createMonth, toDate } from "reka-ui/date";
 import type { Grid } from "reka-ui/date"
 import type { DateRange } from "reka-ui"
 
@@ -39,11 +39,17 @@ import {
     subDays,
     subWeeks,
     subMonths,
+    startOfDay,
+    endOfDay,
 } from "date-fns"
+
+const props = defineProps<{
+    fullDay?: boolean
+}>()
 
 // emit event for v-model
 const emit = defineEmits<{
-    (e: "update:modelValue", value: DateRange): void
+    (e: "update:modelValue", value: { start?: Date; end?: Date }): void
 }>()
 
 /* -------------------- Constants -------------------- */
@@ -212,7 +218,14 @@ function setTempDateRange(startJS: Date, endJS: Date, preset: PresetKey | null =
 
 function applyChanges(): void {
     value.value = { ...tempValue.value }
-    emit("update:modelValue", { ...value.value }) // ✅ Correct emit
+    // modify start & end date start of day & end of day
+    const { start, end } = tempValue.value;
+
+    if (props.fullDay) {
+        emit("update:modelValue", { start: start ? startOfDay(toDate(start)) : undefined, end: end ? endOfDay(toDate(end)) : undefined });
+    } else {
+        emit("update:modelValue", { start: start ? toDate(start) : undefined, end: end ? toDate(end) : undefined });
+    }
     isOpen.value = false
 }
 
