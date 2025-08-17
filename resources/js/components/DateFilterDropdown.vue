@@ -216,16 +216,23 @@ function setTempDateRange(startJS: Date, endJS: Date, preset: PresetKey | null =
     activePreset.value = preset
 }
 
+// helper
+function normalize(date?: DateValue, isStart = true): Date | undefined {
+    if (!date) return undefined
+    const jsDate = toDate(date)
+    if (!props.fullDay) return jsDate
+    return isStart ? startOfDay(jsDate) : endOfDay(jsDate)
+}
+
 function applyChanges(): void {
     value.value = { ...tempValue.value }
     // modify start & end date start of day & end of day
     const { start, end } = tempValue.value;
 
-    if (props.fullDay) {
-        emit("update:modelValue", { start: start ? startOfDay(toDate(start)) : undefined, end: end ? endOfDay(toDate(end)) : undefined });
-    } else {
-        emit("update:modelValue", { start: start ? toDate(start) : undefined, end: end ? toDate(end) : undefined });
-    }
+    emit("update:modelValue", {
+        start: normalize(start, true),
+        end: normalize(end, false),
+    })
     isOpen.value = false
 }
 

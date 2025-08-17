@@ -66,6 +66,7 @@ const props = defineProps<{ users: UsersProp }>();
 
 // Sheet control
 const isSheetOpen = ref(false);
+const isFullDay = ref(false);
 const emptyUser = { id: 0, name: '', email: '', created_at: '', updated_at: '' }
 const selectedUser = ref<User>({ ...emptyUser })
 
@@ -106,17 +107,17 @@ function cancelEdit() {
     isSheetOpen.value = false;
 }
 
-const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
+const range = ref<{ start: Date | null, end: Date | null, startMilis: number | null }>({ start: null, end: null, startMilis: null })
 
 watch(range, (val) => {
     if (!val) return
 
-    const { start, end } = val
+    const { start, end, startMilis } = val
 
     const formattedStart = start ? format(toDate(start), "yyyy-MM-dd HH:mm:ss") : null
     const formattedEnd = end ? format(toDate(end), "yyyy-MM-dd HH:mm:ss") : null
 
-    console.log("📅 Parent got new range:", { start: formattedStart, end: formattedEnd })
+    console.log("📅 Parent got new range:", { start: formattedStart, end: formattedEnd, startMilis })
 })
 </script>
 
@@ -130,7 +131,7 @@ watch(range, (val) => {
 
                 <div class="flex items-center justify-between py-3">
                     <div class="flex items-center gap-3">
-                        <DateFilterDropdown v-model="range" :fullDay="true" />
+                        <DateFilterDropdown v-model="range" :fullDay="isFullDay" />
                         <Button variant="outline" @click="openEditSheet(selectedUser)">
                             <SlidersHorizontal /> Filter
                         </Button>
