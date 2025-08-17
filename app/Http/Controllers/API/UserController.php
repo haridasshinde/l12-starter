@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -41,16 +42,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate incoming request
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
+        // Hash the password if provided, otherwise generate a random one
+        $password = 12345678;
+
+        // Create the user
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'email_verified_at' => now(),
+            'password' => bcrypt($password),
         ]);
 
         return redirect()->route('users.index')

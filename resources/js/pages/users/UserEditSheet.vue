@@ -44,6 +44,10 @@ watch(() => props.user, (val) => {
                     <Label for="email" class="text-right">Email</Label>
                     <Input id="email" type="email" v-model="localUser.email" class="col-span-3" required />
                 </div>
+                <div class="grid grid-cols-4 items-center gap-4">
+                    <Label for="password" class="text-right">Password</Label>
+                    <Input id="password" type="text" v-model="localUser.password" class="col-span-3" required />
+                </div>
 
                 <SheetFooter class="flex justify-end gap-2">
                     <SheetClose asChild>
