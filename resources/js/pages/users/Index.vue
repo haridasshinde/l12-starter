@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import Pagination from '../extra/Pagination.vue'
 import { ref, watch } from 'vue'
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import {
     Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Download, Plus, SlidersHorizontal } from 'lucide-vue-next'
+import { Download, Plus, SlidersHorizontal, Info } from 'lucide-vue-next'
 import { formatDateTime } from "@/utils/dateFormat"
 import DateFilterDropdown from '@/components/DateFilterDropdown.vue'
 import { format, toDate } from 'date-fns'
@@ -21,15 +21,30 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'User Management', href: '/users
 const props = defineProps<{ users: UsersProp }>()
 
 const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges } = useUserSheet()
-const isFullDay = ref(false)
+const isFullDay = ref(true)
 const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
+
+const applyFilters = () => {
+    router.post('/users', {
+        start: range.value.start
+            ? format(toDate(range.value.start), "yyyy-MM-dd HH:mm:ss")
+            : null,
+        end: range.value.end
+            ? format(toDate(range.value.end), "yyyy-MM-dd HH:mm:ss")
+            : null
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    })
+}
 
 watch(range, (val) => {
     if (!val) return
-    console.log("📅 Parent got new range:", {
-        start: val.start ? format(toDate(val.start), "yyyy-MM-dd HH:mm:ss") : null,
-        end: val.end ? format(toDate(val.end), "yyyy-MM-dd HH:mm:ss") : null,
-    })
+    // console.log("📅 Parent got new range:", {
+    //     start: val.start ? format(toDate(val.start), "yyyy-MM-dd HH:mm:ss") : null,
+    //     end: val.end ? format(toDate(val.end), "yyyy-MM-dd HH:mm:ss") : null,
+    // })
+    applyFilters();
 })
 </script>
 
@@ -97,12 +112,18 @@ watch(range, (val) => {
                                 <Button variant="outline" @click="openEditSheet(user)">Edit</Button>
                             </td>
                         </tr>
+                        <td class="px-5 py-2 text-center" colspan="5" v-if="!props.users.data.length">
+                            <div class="flex items-center justify-center gap-2 text-gray-500">
+                                <Info class="w-4 h-4" />
+                                <span>No records found</span>
+                            </div>
+                        </td>
                     </tbody>
                 </table>
             </div>
 
             <!-- Pagination -->
-            <Pagination :pagination="props.users" />
+            <Pagination :pagination="props.users" v-if="props.users.data.length" />
 
             <!-- User Edit Sheet -->
             <UserEditSheet v-model:open="isSheetOpen" :user="selectedUser" @save="saveChanges" @cancel="cancelEdit" />
