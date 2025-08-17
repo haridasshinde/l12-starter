@@ -31,7 +31,7 @@ class UserController extends Controller
             ->paginate(10);
 
         return Inertia::render('users/Index', [
-            'message' => 'This is data passed from Laravel!',
+            'message' => 'Users has been success loaded',
             'users' => $users,
         ]);
     }
@@ -53,11 +53,8 @@ class UserController extends Controller
             'password' => bcrypt($validated['password']),
         ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully.',
-            'data' => $user,
-        ], 201);
+        return redirect()->route('users.index')
+            ->with('success', 'User created successfully.');
     }
 
     /**
@@ -94,11 +91,8 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User updated successfully.',
-            'data' => $user,
-        ]);
+        return redirect()->route('users.index')
+            ->with('success', 'User updated successfully.');
     }
 
     /**
@@ -109,9 +103,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User deleted successfully.',
-        ]);
+        return redirect()->route('users.index')
+            ->with('success', 'User deleted successfully.');
     }
 }
