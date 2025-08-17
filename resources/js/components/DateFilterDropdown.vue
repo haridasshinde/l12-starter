@@ -41,6 +41,11 @@ import {
     subMonths,
 } from "date-fns"
 
+// emit event for v-model
+const emit = defineEmits<{
+    (e: "update:modelValue", value: DateRange): void
+}>()
+
 /* -------------------- Constants -------------------- */
 const WEEK_START = 0 as const // Sunday
 const LOCALE = "en-US" as const
@@ -207,6 +212,7 @@ function setTempDateRange(startJS: Date, endJS: Date, preset: PresetKey | null =
 
 function applyChanges(): void {
     value.value = { ...tempValue.value }
+    emit("update:modelValue", { ...value.value }) // ✅ Correct emit
     isOpen.value = false
 }
 

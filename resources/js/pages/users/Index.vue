@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import Pagination from '../extra/Pagination.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,7 @@ import { Download, Plus, SlidersHorizontal } from 'lucide-vue-next';
 import Swal from 'sweetalert2'
 import { formatDateTime } from "@/utils/dateFormat";
 import DateFilterDropdown from '@/components/DateFilterDropdown.vue';
+import { format, toDate } from 'date-fns';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'User Management', href: '/users' },
@@ -106,6 +107,17 @@ function cancelEdit() {
 }
 
 const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
+
+watch(range, (val) => {
+    if (!val) return
+
+    const { start, end } = val
+
+    const formattedStart = start ? format(toDate(start), "yyyy-MM-dd HH:mm:ss") : null
+    const formattedEnd = end ? format(toDate(end), "yyyy-MM-dd HH:mm:ss") : null
+
+    console.log("📅 Parent got new range:", { start: formattedStart, end: formattedEnd })
+})
 </script>
 
 <template>
@@ -119,7 +131,6 @@ const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: 
                 <div class="flex items-center justify-between py-3">
                     <div class="flex items-center gap-3">
                         <DateFilterDropdown v-model="range" :fullDay="true" />
-
                         <Button variant="outline" @click="openEditSheet(selectedUser)">
                             <SlidersHorizontal /> Filter
                         </Button>
