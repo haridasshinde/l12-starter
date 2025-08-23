@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\SearchTarget;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -14,14 +16,24 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search = $request->q;
+        $target = $request->target;
+
         $users = User::latest()
-            ->when($search, fn($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($search && SearchTarget::isValid($target), function ($query) use ($search, $target) {
+                $query->where($target, 'like', "%{$search}%");
+            })
+            ->when($request->start && $request->end, function ($q) use ($request) {
+                $q->whereBetween('created_at', [
+                    $request->start,
+                    $request->end,
+                ]);
+            })
             ->paginate(10);
 
         return Inertia::render('users/Index', [
-            'message' => 'This is data passed from Laravel!',
-            'users' => $users
+            'message' => 'Users has been success loaded',
+            'users' => $users,
         ]);
     }
 
@@ -30,23 +42,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate incoming request
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
+        // Hash the password if provided, otherwise generate a random one
+        $password = 12345678;
+
+        // Create the user
         $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => bcrypt($validated['password']),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'email_verified_at' => now(),
+            'password' => bcrypt($password),
         ]);
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'User created successfully.',
-            'data'    => $user
-        ], 201);
+        return redirect()->route('users.index')
+            ->with('success', 'User created successfully.');
     }
 
     /**
@@ -56,10 +71,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        return response()->json([
-            'status' => 'success',
-            'data'   => $user
-        ]);
+        return redirect()->route('users.index')
+            ->with('success', 'User details fetched successfully.');
     }
 
     /**
@@ -70,12 +83,12 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'     => 'sometimes|required|string|max:255',
-            'email'    => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8',
         ]);
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = bcrypt($validated['password']);
         } else {
             unset($validated['password']);
@@ -83,11 +96,8 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'User updated successfully.',
-            'data'    => $user
-        ]);
+        return redirect()->route('users.index')
+            ->with('success', 'User updated successfully.');
     }
 
     /**
@@ -98,9 +108,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'User deleted successfully.'
-        ]);
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }
