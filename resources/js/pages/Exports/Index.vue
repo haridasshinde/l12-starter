@@ -9,6 +9,17 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { RefreshCw } from "lucide-vue-next"
 
 interface ExportRecord {
     id: number
@@ -45,56 +56,64 @@ defineExpose({ fetchExports })
     <Sheet>
         <!-- Sidebar trigger -->
         <SheetTrigger as-child>
-            <Button variant="outline">📂 Show Exports</Button>
+            <Button variant="outline" class="flex items-center gap-2">
+                📂 Show Exports
+            </Button>
         </SheetTrigger>
 
         <!-- Sidebar -->
-        <SheetContent side="right" class="w-full sm:max-w-[700px] h-full">
-            <SheetHeader class="flex items-center justify-between">
-                <SheetTitle>User Exports</SheetTitle>
-                <Button variant="secondary" size="sm" @click="fetchExports" :disabled="loading">
-                    {{ loading ? "Refreshing..." : "↻ Refresh" }}
+        <SheetContent side="right" class="w-full sm:max-w-[850px] h-full flex flex-col">
+            <SheetHeader class="flex flex-row items-center justify-between border-b pb-3">
+                <SheetTitle class="text-lg font-semibold">User Exports</SheetTitle>
+                <Button variant="secondary" size="sm" @click="fetchExports" :disabled="loading"
+                    class="flex items-center gap-1">
+                    <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
+                    <span>{{ loading ? "Refreshing..." : "Refresh" }}</span>
                 </Button>
             </SheetHeader>
 
-            <div class="mt-6">
-                <table class="w-full border border-gray-300 text-sm">
-                    <thead>
-                        <tr class="bg-gray-100 text-left">
-                            <th class="p-2 border">ID</th>
-                            <th class="p-2 border">File Name</th>
-                            <th class="p-2 border">Status</th>
-                            <th class="p-2 border">Download</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="exp in exportsList" :key="exp.id" class="hover:bg-gray-50">
-                            <td class="border p-2">{{ exp.id }}</td>
-                            <td class="border p-2">{{ exp.file_name || '-' }}</td>
-                            <td class="border p-2">
-                                <span v-if="exp.status === 'completed'" class="text-green-600 font-semibold">✔
-                                    Completed</span>
-                                <span v-else-if="exp.status === 'processing'"
-                                    class="text-yellow-600 font-semibold">Processing...</span>
-                                <span v-else-if="exp.status === 'pending'"
-                                    class="text-gray-600 font-semibold">Pending</span>
-                                <span v-else class="text-red-600 font-semibold">Failed</span>
-                            </td>
-                            <td class="border p-2">
-                                <a v-if="exp.status === 'completed' && exp.file_path"
-                                    :href="`/storage/${exp.file_path}`"
-                                    class="text-blue-500 underline hover:text-blue-700" download>
-                                    Download
-                                </a>
-                                <span v-else>-</span>
-                            </td>
-                        </tr>
-                        <tr v-if="exportsList.length === 0">
-                            <td colspan="4" class="text-center p-4 text-gray-500">No exports yet</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Card containing the table -->
+            <Card class="flex-1 mt-4 shadow-md rounded-2xl">
+                <CardHeader class="pb-2">
+                    <CardTitle class="text-base">Exports List</CardTitle>
+                </CardHeader>
+                <CardContent class="overflow-auto max-h-[calc(100vh-180px)]">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead class="w-[60px]">ID</TableHead>
+                                <TableHead>File Name</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead class="text-right">Download</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow v-for="exp in exportsList" :key="exp.id">
+                                <TableCell>{{ exp.id }}</TableCell>
+                                <TableCell>{{ exp.file_name || '-' }}</TableCell>
+                                <TableCell>
+                                    <Badge v-if="exp.status === 'completed'" variant="success">Completed</Badge>
+                                    <Badge v-else-if="exp.status === 'processing'" variant="warning">Processing</Badge>
+                                    <Badge v-else-if="exp.status === 'pending'" variant="outline">Pending</Badge>
+                                    <Badge v-else variant="destructive">Failed</Badge>
+                                </TableCell>
+                                <TableCell class="text-right">
+                                    <Button v-if="exp.status === 'completed' && exp.file_path" as-child variant="link"
+                                        class="px-0 text-blue-600">
+                                        <a :href="`/storage/${exp.file_path}`" download>Download</a>
+                                    </Button>
+                                    <span v-else class="text-gray-400">—</span>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow v-if="exportsList.length === 0">
+                                <TableCell colspan="4" class="text-center py-6 text-gray-500">
+                                    No exports yet
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </SheetContent>
     </Sheet>
 </template>
