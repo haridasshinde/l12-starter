@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {
-    Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose
+    Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter
 } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +21,7 @@ const emit = defineEmits<{
 const localUser = ref<User>({ ...props.user })
 function saveUser() {
     emit('save', localUser.value)
+    open.value = false // ✅ close sheet after saving
 }
 // keep local copy in sync when prop changes
 watch(() => props.user, (val) => {
@@ -30,10 +31,12 @@ watch(() => props.user, (val) => {
 
 <template>
     <Sheet v-model:open="open">
-        <SheetContent>
+        <SheetContent class="w-full sm:max-w-[700px] h-full">
             <SheetHeader>
                 <SheetTitle>{{ isEditUser ? 'Edit User' : "New User" }}</SheetTitle>
-                <SheetDescription>Make changes to your profile here. Click save when you're done.</SheetDescription>
+                <SheetDescription>
+                    Make changes to your profile here. Click save when you're done.
+                </SheetDescription>
             </SheetHeader>
             <form @submit.prevent="saveUser" class="grid gap-4 py-4 px-4">
                 <div class="grid grid-cols-4 items-center gap-4">
@@ -46,16 +49,14 @@ watch(() => props.user, (val) => {
                 </div>
                 <div class="grid grid-cols-4 items-center gap-4">
                     <Label for="password" class="text-right">Password</Label>
-                    <Input id="password" type="text" v-model="localUser.password" class="col-span-3" required />
+                    <Input id="password" type="text" v-model="localUser.password" class="col-span-3" />
                 </div>
 
                 <SheetFooter class="flex justify-end gap-2">
-                    <SheetClose asChild>
+                    <div class="px-5 py-2 flex justify-center gap-2">
                         <Button type="button" variant="outline" @click="emit('cancel')">Cancel</Button>
-                    </SheetClose>
-                    <SheetClose asChild>
                         <Button type="submit">Save changes</Button>
-                    </SheetClose>
+                    </div>
                 </SheetFooter>
             </form>
         </SheetContent>
