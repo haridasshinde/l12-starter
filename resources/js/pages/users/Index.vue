@@ -141,6 +141,8 @@ watch(() => search.value, (val) => {
                         <Button variant="outline" size="sm" @click="startExport">
                             <Download /> Export
                         </Button>
+                        <!-- Export Button -->
+                        <ExportsIndex ref="exportsComp" />
                         <Button @click="newUserCreate">
                             <Plus /> Add User
                         </Button>
@@ -210,7 +212,7 @@ watch(() => search.value, (val) => {
             <UserEditSheet v-model:open="isSheetOpen" :isEditUser="isEditUser" :user="selectedUser" @save="saveChanges"
                 @cancel="cancelEdit" />
 
-            <ExportsIndex ref="exportsComp" />
+
         </div>
     </AppLayout>
 </template>
