@@ -12,8 +12,8 @@ class ExportController extends Controller
     {
         $exports = Export::latest()->get();
 
-        return Inertia::render('Exports/Index', [
-            'exports' => $exports,
+        return response()->json([
+            'data' => $exports
         ]);
     }
 
@@ -28,5 +28,21 @@ class ExportController extends Controller
         ExportUsersJob::dispatch($export);
 
         return redirect()->back()->with('success', 'Export started, please wait...');
+    }
+
+    public function list()
+    {
+        // API endpoint for Vue fetch
+        $exports = Export::latest()->get();
+
+        return response()->json([
+            'data' => $exports
+        ]);
+
+        $exports = Export::latest()->get();
+
+        return Inertia::render('Exports/Index', [
+            'exports' => $exports,
+        ]);
     }
 }

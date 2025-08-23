@@ -15,6 +15,7 @@ import { format, toDate } from 'date-fns'
 import type { BreadcrumbItem } from '@/types'
 import type { UsersProp } from '@/types/user'
 import UserEditSheet from './UserEditSheet.vue'
+import ExportsIndex from '../Exports/Index.vue'
 import { useUserSheet } from '@/composables/useUserSheet'
 import Avatar from '@/components/ui/avatar/Avatar.vue'
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue'
@@ -51,6 +52,29 @@ const getUserInitials = (name: string) => {
     const names = name.split(' ');
     const initials = names.map(n => n[0].toUpperCase()).join('');
     return initials.slice(0, 2); // max 2 letters
+}
+
+const message = ref<string | null>(null)
+
+function showMessage(text: string) {
+    message.value = text
+    setTimeout(() => {
+        message.value = null
+    }, 3000) // auto close after 3 seconds
+}
+
+
+function startExport() {
+    message.value = null
+
+    router.post('/exports', {}, {
+        onSuccess: () => {
+            showMessage("✅ Export started successfully!")
+        },
+        onError: () => {
+            showMessage("❌ Something went wrong while starting the export.")
+        }
+    })
 }
 
 watch(range, (val) => {
@@ -111,14 +135,18 @@ watch(() => search.value, (val) => {
 
                     </div>
                     <div class="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                            <Download /> Export
-                        </Button>
                         <Button @click="newUserCreate">
                             <Plus /> Add User
                         </Button>
                     </div>
                 </div>
+                <!-- Feedback Message -->
+                <transition name="fade">
+                    <div v-if="message" class="mt-4 p-2 rounded text-sm"
+                        :class="message.includes('✅') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                        {{ message }}
+                    </div>
+                </transition>
                 <!-- Table -->
                 <table class="min-w-full text-sm text-left text-gray-600 dark:text-gray-300">
                     <thead
@@ -172,11 +200,25 @@ watch(() => search.value, (val) => {
 
             <!-- Pagination -->
             <Pagination :pagination="props.users" v-if="props.users.data.length" />
-
+            <Button variant="outline" size="sm" @click="startExport">
+                <Download /> Export
+            </Button>
             <!-- User Edit Sheet -->
             <UserEditSheet v-model:open="isSheetOpen" :isEditUser="isEditUser" :user="selectedUser" @save="saveChanges"
                 @cancel="cancelEdit" />
 
+            <ExportsIndex />
         </div>
     </AppLayout>
 </template>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
