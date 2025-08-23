@@ -15,10 +15,9 @@ const exportsList = ref<ExportRecord[]>([])
 
 async function fetchExports() {
     try {
-        const res = await axios.get('exports')
-        console.log("API Response:", res.data)
+        const res = await axios.get('/exports') // use absolute path
+        console.log("Refresh Export Data:", res.data)
         exportsList.value = res.data.data // must match controller response
-
     } catch (err) {
         console.error("Fetch error:", err)
     }
@@ -28,6 +27,10 @@ onMounted(() => {
     fetchExports()
 })
 
+// 👇 expose this function so parent can call it
+defineExpose({
+    fetchExports
+})
 </script>
 
 <template>

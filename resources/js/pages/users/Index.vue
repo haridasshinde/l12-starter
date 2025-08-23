@@ -63,13 +63,16 @@ function showMessage(text: string) {
     }, 3000) // auto close after 3 seconds
 }
 
-
+const exportsComp = ref<InstanceType<typeof ExportsIndex> | null>(null)
 function startExport() {
     message.value = null
 
     router.post('/exports', {}, {
         onSuccess: () => {
-            showMessage("✅ Export started successfully!")
+            showMessage("✅ Export started successfully!");
+            if (exportsComp.value) {
+                exportsComp.value.fetchExports() // 👈 call child function
+            }
         },
         onError: () => {
             showMessage("❌ Something went wrong while starting the export.")
@@ -135,6 +138,9 @@ watch(() => search.value, (val) => {
 
                     </div>
                     <div class="flex items-center gap-2">
+                        <Button variant="outline" size="sm" @click="startExport">
+                            <Download /> Export
+                        </Button>
                         <Button @click="newUserCreate">
                             <Plus /> Add User
                         </Button>
@@ -200,14 +206,11 @@ watch(() => search.value, (val) => {
 
             <!-- Pagination -->
             <Pagination :pagination="props.users" v-if="props.users.data.length" />
-            <Button variant="outline" size="sm" @click="startExport">
-                <Download /> Export
-            </Button>
             <!-- User Edit Sheet -->
             <UserEditSheet v-model:open="isSheetOpen" :isEditUser="isEditUser" :user="selectedUser" @save="saveChanges"
                 @cancel="cancelEdit" />
 
-            <ExportsIndex />
+            <ExportsIndex ref="exportsComp" />
         </div>
     </AppLayout>
 </template>
