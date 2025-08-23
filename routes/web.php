@@ -15,6 +15,6 @@ Route::get('dashboard', function () {
 Route::get('/exports', [ExportController::class, 'index'])->name('exports.index');
 Route::post('/exports', [ExportController::class, 'store'])->name('exports.store');
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
-require __DIR__ . '/users.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/users.php';

@@ -1,5 +1,7 @@
 <?php
+
 // app/Jobs/ExportUsersJob.php
+
 namespace App\Jobs;
 
 use App\Exports\UsersExport;
@@ -10,7 +12,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Storage;
 
 class ExportUsersJob implements ShouldQueue
 {
@@ -25,8 +26,8 @@ class ExportUsersJob implements ShouldQueue
 
     public function handle()
     {
-        $fileName = 'users_export_' . now()->timestamp . '.xlsx';
-        $filePath = 'exports/' . $fileName;
+        $fileName = 'users_export_'.now()->timestamp.'.xlsx';
+        $filePath = 'exports/'.$fileName;
 
         $this->exportRecord->update(['status' => 'processing']);
 
