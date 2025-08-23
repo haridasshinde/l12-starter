@@ -61,6 +61,12 @@ watch(range, (val) => {
     // })
     applyFilters();
 })
+
+watch(() => search.value, (val) => {
+    if (!val) {
+        applyFilters()
+    }
+})
 </script>
 
 <template>
@@ -152,12 +158,14 @@ watch(range, (val) => {
                                 </Button>
                             </td>
                         </tr>
-                        <td class="px-5 py-2 text-center" colspan="5" v-if="!props.users.data.length">
-                            <div class="flex items-center justify-center gap-2 text-gray-500">
-                                <Info class="w-4 h-4" />
-                                <span>No records found</span>
-                            </div>
-                        </td>
+                        <tr v-if="!props.users.data.length">
+                            <td class="px-5 py-2 text-center" colspan="5">
+                                <div class="flex items-center justify-center gap-2 text-gray-500">
+                                    <Info class="w-4 h-4" />
+                                    <span>No records found</span>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
