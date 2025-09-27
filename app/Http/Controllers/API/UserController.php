@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -84,7 +83,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$id,
             'password' => 'nullable|string|min:8',
         ]);
 
