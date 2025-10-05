@@ -20,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { RefreshCw } from "lucide-vue-next"
+import { formatDateTime, getTimeDiffString } from '@/utils/dateFormat'
 
 interface ExportRecord {
     id: number
@@ -86,6 +87,9 @@ defineExpose({ fetchExports })
                                 <TableHead class="w-[60px]">ID</TableHead>
                                 <TableHead>File Name</TableHead>
                                 <TableHead>Status</TableHead>
+                                <TableHead>Created At</TableHead>
+                                <TableHead>Updated At</TableHead>
+                                <TableHead>Duration</TableHead>
                                 <TableHead class="text-right">Download</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -100,6 +104,9 @@ defineExpose({ fetchExports })
                                     <Badge v-else-if="exp.status === 'pending'" variant="outline">Pending</Badge>
                                     <Badge v-else variant="destructive">Failed</Badge>
                                 </TableCell>
+                                <TableCell>{{ formatDateTime(exp.created_at) }}</TableCell>
+                                <TableCell>{{ formatDateTime(exp.updated_at) }}</TableCell>
+                                <TableCell>{{ getTimeDiffString(exp.created_at, exp.updated_at) }}</TableCell>
                                 <TableCell class="text-right">
                                     <Button v-if="exp.status === 'completed' && exp.file_path" as-child variant="link"
                                         class="px-0 text-blue-600">
