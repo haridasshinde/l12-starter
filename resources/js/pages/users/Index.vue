@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import Pagination from '../extra/Pagination.vue'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -23,7 +23,7 @@ import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'User Management', href: '/users' }]
 const props = defineProps<{ users: UsersProp }>()
-
+let mounted = false;
 const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges, newUserCreate, isEditUser, deleteUser } = useUserSheet()
 const isFullDay = ref(true)
 const today = new Date()
@@ -59,7 +59,7 @@ const applyFilters = (page?: number) => {
     router.post('/users', payload, {
         preserveState: true,  // keeps component state like filters
         preserveScroll: true, // keeps scroll position
-    })
+    },)
 }
 
 
@@ -97,11 +97,8 @@ function startExport() {
 }
 
 watch(range, (val) => {
+    if (!mounted) return;
     if (!val) return
-    // console.log("📅 Parent got new range:", {
-    //     start: val.start ? format(toDate(val.start), "yyyy-MM-dd HH:mm:ss") : null,
-    //     end: val.end ? format(toDate(val.end), "yyyy-MM-dd HH:mm:ss") : null,
-    // })
     applyFilters();
 })
 
@@ -110,6 +107,13 @@ watch(() => search.value, (val) => {
         applyFilters()
     }
 })
+
+
+
+onMounted(() => {
+    mounted = true
+})
+
 </script>
 
 <template>
