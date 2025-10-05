@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import axios from 'axios'
-import { ref, onMounted, onUnmounted } from 'vue'
 import {
     Sheet,
     SheetContent,
@@ -9,102 +7,41 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { RefreshCw } from "lucide-vue-next"
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import { formatDateTime, getTimeDiffString } from '@/utils/dateFormat'
+import { useExportNotifications } from '@/utils/useExportNotifications'
 
-interface ExportRecord {
-    id: number
-    file_name: string | null
-    file_path: string | null
-    status: 'pending' | 'processing' | 'completed' | 'failed'
-    created_at: string
-    updated_at: string
-}
-
-const exportsList = ref<ExportRecord[]>([])
-const loading = ref(false)
-const message = ref('')
-
-const notifiedExports = new Set<number>() // track which exports have been notified
-
-async function fetchExports() {
-    try {
-        loading.value = true
-        const res = await axios.get('/exports')
-        exportsList.value = res.data.data
-
-        // Check for newly completed exports
-        exportsList.value.forEach(exp => {
-            if (exp.status === 'completed' && !notifiedExports.has(exp.id)) {
-                message.value = `✅ Export ${exp.file_name} completed!`
-                notifiedExports.add(exp.id)
-                // Optionally auto-hide message after 3s
-                setTimeout(() => message.value = '', 5000)
-            }
-        })
-    } catch (err) {
-        console.error('Fetch error:', err)
-    } finally {
-        loading.value = false
-    }
-}
-
-let pollInterval: number
-onMounted(() => {
-    fetchExports()
-    pollInterval = window.setInterval(fetchExports, 5000)
-})
-
-// Clear interval when component unmounts
-onUnmounted(() => {
-    clearInterval(pollInterval)
-})
-
-defineExpose({ fetchExports })
-
+const { exportsList, messages } = useExportNotifications(5000)
 </script>
 
 <template>
     <Sheet>
-        <!-- Sidebar trigger -->
         <SheetTrigger as-child>
             <Button variant="outline" class="flex items-center gap-2">
                 📂 Show Exports
             </Button>
         </SheetTrigger>
 
-        <!-- Sidebar -->
         <SheetContent side="right" class="w-full sm:max-w-[850px] h-full flex flex-col">
             <SheetHeader class="relative border-b pb-3">
                 <div class="flex items-center justify-between pr-10">
                     <SheetTitle class="text-lg font-semibold">User Exports</SheetTitle>
-                    <Button variant="secondary" size="sm" @click="fetchExports" :disabled="loading"
+                    <!-- <Button variant="secondary" size="sm" @click="fetchExports" :disabled="loading"
                         class="flex items-center gap-1">
                         <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
                         <span>{{ loading ? "Refreshing..." : "Refresh" }}</span>
-                    </Button>
+                    </Button> -->
                 </div>
             </SheetHeader>
 
-            <div>
-                <div v-if="message" class="bg-green-100 text-green-700 p-2 mb-2 rounded">{{ message }}</div>
-                <ul>
-                    <li v-for="exp in exportsList" :key="exp.id">
-                        {{ exp.file_name }} - {{ exp.status }}
-                    </li>
-                </ul>
+            <!-- Notifications -->
+            <div v-for="msg in messages" :key="msg" class="bg-green-100 text-green-700 p-2 mb-2 rounded">
+                {{ msg }}
             </div>
-            <!-- Card containing the table -->
+
+            <!-- Exports Table -->
             <Card class="flex-1 m-2 shadow-md rounded-2xl">
                 <CardHeader class="pb-2">
                     <CardTitle class="text-base">Exports List</CardTitle>
@@ -145,9 +82,7 @@ defineExpose({ fetchExports })
                                 </TableCell>
                             </TableRow>
                             <TableRow v-if="exportsList.length === 0">
-                                <TableCell colspan="4" class="text-center py-6 text-gray-500">
-                                    No exports yet
-                                </TableCell>
+                                <TableCell colspan="7" class="text-center py-6 text-gray-500">No exports yet</TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
