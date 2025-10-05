@@ -31,21 +31,32 @@ const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: 
 const searchField = ref("name");
 const search = ref("");
 
-const applyFilters = () => {
-    router.post('/users', {
-        start: range.value.start
-            ? format(toDate(range.value.start), "yyyy-MM-dd HH:mm:ss")
-            : null,
-        end: range.value.end
-            ? format(toDate(range.value.end), "yyyy-MM-dd HH:mm:ss")
-            : null,
-        target: searchField.value,
-        q: search.value
-    }, {
-        preserveState: true,
-        preserveScroll: true,
+const applyFilters = (page?: number) => {
+    // Prepare date range in a consistent format
+    const startDate = range.value.start
+        ? format(toDate(range.value.start), 'yyyy-MM-dd HH:mm:ss')
+        : null
+
+    const endDate = range.value.end
+        ? format(toDate(range.value.end), 'yyyy-MM-dd HH:mm:ss')
+        : null
+
+    // Build payload
+    const payload = {
+        page: page ?? 1, // default to page 1 if undefined
+        start: startDate,
+        end: endDate,
+        target: searchField.value || null,
+        q: search.value || null,
+    }
+
+    // Make POST request with Inertia
+    router.post('/users', payload, {
+        preserveState: true,  // keeps component state like filters
+        preserveScroll: true, // keeps scroll position
     })
 }
+
 
 const getUserInitials = (name: string) => {
     if (!name) return 'NA';
@@ -207,7 +218,7 @@ watch(() => search.value, (val) => {
             </div>
 
             <!-- Pagination -->
-            <Pagination :pagination="props.users" v-if="props.users.data.length" />
+            <Pagination :pagination="props.users" v-if="props.users.data.length" @page-changed="applyFilters" />
             <!-- User Edit Sheet -->
             <UserEditSheet v-model:open="isSheetOpen" :isEditUser="isEditUser" :user="selectedUser" @save="saveChanges"
                 @cancel="cancelEdit" />
