@@ -63,17 +63,19 @@ defineExpose({ fetchExports })
 
         <!-- Sidebar -->
         <SheetContent side="right" class="w-full sm:max-w-[850px] h-full flex flex-col">
-            <SheetHeader class="flex flex-row items-center justify-between border-b pb-3">
-                <SheetTitle class="text-lg font-semibold">User Exports</SheetTitle>
-                <Button variant="secondary" size="sm" @click="fetchExports" :disabled="loading"
-                    class="flex items-center gap-1">
-                    <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
-                    <span>{{ loading ? "Refreshing..." : "Refresh" }}</span>
-                </Button>
+            <SheetHeader class="relative border-b pb-3">
+                <div class="flex items-center justify-between pr-10">
+                    <SheetTitle class="text-lg font-semibold">User Exports</SheetTitle>
+                    <Button variant="secondary" size="sm" @click="fetchExports" :disabled="loading"
+                        class="flex items-center gap-1">
+                        <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': loading }" />
+                        <span>{{ loading ? "Refreshing..." : "Refresh" }}</span>
+                    </Button>
+                </div>
             </SheetHeader>
 
             <!-- Card containing the table -->
-            <Card class="flex-1 mt-4 shadow-md rounded-2xl">
+            <Card class="flex-1 m-2 shadow-md rounded-2xl">
                 <CardHeader class="pb-2">
                     <CardTitle class="text-base">Exports List</CardTitle>
                 </CardHeader>
@@ -92,8 +94,9 @@ defineExpose({ fetchExports })
                                 <TableCell>{{ exp.id }}</TableCell>
                                 <TableCell>{{ exp.file_name || '-' }}</TableCell>
                                 <TableCell>
-                                    <Badge v-if="exp.status === 'completed'" variant="success">Completed</Badge>
-                                    <Badge v-else-if="exp.status === 'processing'" variant="warning">Processing</Badge>
+                                    <Badge v-if="exp.status === 'completed'">Completed</Badge>
+                                    <Badge v-else-if="exp.status === 'processing'" variant="secondary">Processing
+                                    </Badge>
                                     <Badge v-else-if="exp.status === 'pending'" variant="outline">Pending</Badge>
                                     <Badge v-else variant="destructive">Failed</Badge>
                                 </TableCell>
