@@ -18,23 +18,31 @@ class UserController extends Controller
         $search = $request->q;
         $target = $request->target;
 
+        // Default start/end to today if not provided
+        $start = $request->start ?? now()->startOfDay()->format('Y-m-d H:i:s');
+        $end = $request->end ?? now()->endOfDay()->format('Y-m-d H:i:s');
+
         $users = User::latest()
             ->when($search && SearchTarget::isValid($target), function ($query) use ($search, $target) {
                 $query->where($target, 'like', "%{$search}%");
             })
-            ->when($request->start && $request->end, function ($q) use ($request) {
-                $q->whereBetween('created_at', [
-                    $request->start,
-                    $request->end,
-                ]);
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween('created_at', [$start, $end]);
             })
             ->paginate(10);
 
         return Inertia::render('users/Index', [
-            'message' => 'Users has been success loaded',
+            'message' => 'Users have been successfully loaded',
             'users' => $users,
+            'filters' => [
+                'start' => $start,
+                'end' => $end,
+                'target' => $target,
+                'q' => $search,
+            ],
         ]);
     }
+
 
     /**
      * Store a new user.
@@ -83,7 +91,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$id,
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8',
         ]);
 

@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, router } from '@inertiajs/vue3'
 import Pagination from '../extra/Pagination.vue'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -23,29 +23,45 @@ import AvatarImage from '@/components/ui/avatar/AvatarImage.vue'
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'User Management', href: '/users' }]
 const props = defineProps<{ users: UsersProp }>()
-
+let mounted = false;
 const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges, newUserCreate, isEditUser, deleteUser } = useUserSheet()
 const isFullDay = ref(true)
-const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
+const today = new Date()
+
+const range = ref<{ start: Date | null; end: Date | null }>({
+    start: today,
+    end: today,
+})
 
 const searchField = ref("name");
 const search = ref("");
 
-const applyFilters = () => {
-    router.post('/users', {
-        start: range.value.start
-            ? format(toDate(range.value.start), "yyyy-MM-dd HH:mm:ss")
-            : null,
-        end: range.value.end
-            ? format(toDate(range.value.end), "yyyy-MM-dd HH:mm:ss")
-            : null,
-        target: searchField.value,
-        q: search.value
-    }, {
-        preserveState: true,
-        preserveScroll: true,
-    })
+const applyFilters = (page?: number) => {
+    // Prepare date range in a consistent format
+    const startDate = range.value.start
+        ? format(toDate(range.value.start), 'yyyy-MM-dd HH:mm:ss')
+        : null
+
+    const endDate = range.value.end
+        ? format(toDate(range.value.end), 'yyyy-MM-dd HH:mm:ss')
+        : null
+
+    // Build payload
+    const payload = {
+        page: page ?? 1, // default to page 1 if undefined
+        start: startDate,
+        end: endDate,
+        target: searchField.value || null,
+        q: search.value || null,
+    }
+
+    // Make POST request with Inertia
+    router.post('/users', payload, {
+        preserveState: true,  // keeps component state like filters
+        preserveScroll: true, // keeps scroll position
+    },)
 }
+
 
 const getUserInitials = (name: string) => {
     if (!name) return 'NA';
@@ -81,11 +97,8 @@ function startExport() {
 }
 
 watch(range, (val) => {
+    if (!mounted) return;
     if (!val) return
-    // console.log("📅 Parent got new range:", {
-    //     start: val.start ? format(toDate(val.start), "yyyy-MM-dd HH:mm:ss") : null,
-    //     end: val.end ? format(toDate(val.end), "yyyy-MM-dd HH:mm:ss") : null,
-    // })
     applyFilters();
 })
 
@@ -94,6 +107,13 @@ watch(() => search.value, (val) => {
         applyFilters()
     }
 })
+
+
+
+onMounted(() => {
+    mounted = true
+})
+
 </script>
 
 <template>
@@ -207,7 +227,7 @@ watch(() => search.value, (val) => {
             </div>
 
             <!-- Pagination -->
-            <Pagination :pagination="props.users" v-if="props.users.data.length" />
+            <Pagination :pagination="props.users" v-if="props.users.data.length" @page-changed="applyFilters" />
             <!-- User Edit Sheet -->
             <UserEditSheet v-model:open="isSheetOpen" :isEditUser="isEditUser" :user="selectedUser" @save="saveChanges"
                 @cancel="cancelEdit" />
