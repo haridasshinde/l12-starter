@@ -26,7 +26,12 @@ const props = defineProps<{ users: UsersProp }>()
 
 const { isSheetOpen, selectedUser, openEditSheet, cancelEdit, saveChanges, newUserCreate, isEditUser, deleteUser } = useUserSheet()
 const isFullDay = ref(true)
-const range = ref<{ start: Date | null, end: Date | null }>({ start: null, end: null })
+const today = new Date()
+
+const range = ref<{ start: Date | null; end: Date | null }>({
+    start: today,
+    end: today,
+})
 
 const searchField = ref("name");
 const search = ref("");
