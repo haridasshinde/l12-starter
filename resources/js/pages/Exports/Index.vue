@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import {
     Sheet,
     SheetContent,
@@ -33,24 +33,45 @@ interface ExportRecord {
 
 const exportsList = ref<ExportRecord[]>([])
 const loading = ref(false)
+const message = ref('')
+
+const notifiedExports = new Set<number>() // track which exports have been notified
 
 async function fetchExports() {
     try {
         loading.value = true
         const res = await axios.get('/exports')
         exportsList.value = res.data.data
+
+        // Check for newly completed exports
+        exportsList.value.forEach(exp => {
+            if (exp.status === 'completed' && !notifiedExports.has(exp.id)) {
+                message.value = `✅ Export ${exp.file_name} completed!`
+                notifiedExports.add(exp.id)
+                // Optionally auto-hide message after 3s
+                setTimeout(() => message.value = '', 5000)
+            }
+        })
     } catch (err) {
-        console.error("Fetch error:", err)
+        console.error('Fetch error:', err)
     } finally {
         loading.value = false
     }
 }
 
+let pollInterval: number
 onMounted(() => {
     fetchExports()
+    pollInterval = window.setInterval(fetchExports, 5000)
+})
+
+// Clear interval when component unmounts
+onUnmounted(() => {
+    clearInterval(pollInterval)
 })
 
 defineExpose({ fetchExports })
+
 </script>
 
 <template>
@@ -75,6 +96,14 @@ defineExpose({ fetchExports })
                 </div>
             </SheetHeader>
 
+            <div>
+                <div v-if="message" class="bg-green-100 text-green-700 p-2 mb-2 rounded">{{ message }}</div>
+                <ul>
+                    <li v-for="exp in exportsList" :key="exp.id">
+                        {{ exp.file_name }} - {{ exp.status }}
+                    </li>
+                </ul>
+            </div>
             <!-- Card containing the table -->
             <Card class="flex-1 m-2 shadow-md rounded-2xl">
                 <CardHeader class="pb-2">

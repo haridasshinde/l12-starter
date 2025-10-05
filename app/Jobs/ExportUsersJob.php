@@ -4,6 +4,7 @@
 
 namespace App\Jobs;
 
+use App\Events\ExportCompleted;
 use App\Exports\UsersExport;
 use App\Models\Export;
 use Illuminate\Bus\Queueable;
@@ -26,8 +27,8 @@ class ExportUsersJob implements ShouldQueue
 
     public function handle()
     {
-        $fileName = 'users_export_'.now()->timestamp.'.xlsx';
-        $filePath = 'exports/'.$fileName;
+        $fileName = 'users_export_' . now()->timestamp . '.xlsx';
+        $filePath = 'exports/' . $fileName;
 
         $this->exportRecord->update(['status' => 'processing']);
 
@@ -39,6 +40,9 @@ class ExportUsersJob implements ShouldQueue
                 'file_path' => $filePath,
                 'status' => 'completed',
             ]);
+
+            // Fire the broadcast event
+            broadcast(new ExportCompleted($this->exportRecord));
         } catch (\Exception $e) {
             $this->exportRecord->update(['status' => 'failed']);
             throw $e;
